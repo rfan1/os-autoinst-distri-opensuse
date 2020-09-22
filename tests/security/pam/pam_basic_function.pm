@@ -22,11 +22,15 @@ use base 'opensusebasetest';
 use strict;
 use warnings;
 use testapi;
+use utils; 
 use utils 'zypper_call';
 
 sub run {
     my $self = shift;
     $self->select_serial_terminal;
+
+    # Disable packagekit
+    pkcon_quit;
 
     # Install the pam-config package, and make sure it can list all modules
     zypper_call 'in pam-config';

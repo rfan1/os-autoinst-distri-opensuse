@@ -61,9 +61,10 @@ expect {
    }
 }'";
 
-    # Make sure your current user "suse"
+    # Make sure your current user is not switched to root
     validate_script_output "whoami | grep $user && echo 'check pass'", sub { m/check pass/ };
     # Tear down, clear the pam configuration changes
+
     clear_console;
     select_console 'root-console';
     assert_script_run "mv $su_file_bak $su_file";
