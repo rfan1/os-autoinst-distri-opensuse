@@ -39,7 +39,8 @@ sub run {
 
     add_grub_cmdline_settings("ima_appraise=fix $tcb_cmdline", update_grub => 1);
 
-    power_action('reboot', textmode => 1);
+    select_console 'root-console';
+    power_action('reboot', keepconsole => 1, textmode => 1);
     $self->wait_boot(textmode => 1);
     $self->select_serial_terminal;
 
@@ -61,7 +62,8 @@ sub run {
 
     replace_grub_cmdline_settings('ima_appraise=fix', '', update_grub => 1);
 
-    power_action('reboot', textmode => 1);
+    select_console 'root-console';
+    power_action('reboot', keepconsole => 1, textmode => 1);
     $self->wait_boot(textmode => 1);
     $self->select_serial_terminal;
 

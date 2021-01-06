@@ -2429,10 +2429,10 @@ sub load_security_tests_ima_measurement {
 sub load_security_tests_ima_appraisal {
     loadtest "security/ima/ima_setup";
     loadtest "security/ima/ima_appraisal_hashes";
-    loadtest "security/ima/ima_appraisal_digital_signatures";
-    loadtest "security/ima/ima_verify";
-    loadtest "security/ima/ima_appraisal_audit";
-    loadtest "security/ima/evmctl_ima_sign";
+    #loadtest "security/ima/ima_appraisal_digital_signatures";
+    #loadtest "security/ima/ima_verify";
+    #loadtest "security/ima/ima_appraisal_audit";
+    #loadtest "security/ima/evmctl_ima_sign";
 }
 
 sub load_security_tests_evm_protection {
