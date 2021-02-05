@@ -1,0 +1,7 @@
+name:   389ds_sssd
+description:    >
+    This is for 389ds and sssd authentication
+schedule:
+  - boot/boot_to_desktop
+  - console/consoletest_setup
+  - security/389ds/389ds_sssd
