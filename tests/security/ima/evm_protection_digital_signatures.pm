@@ -30,6 +30,26 @@ sub run {
     my ($self) = @_;
     $self->select_serial_terminal;
 
+    zypper_call('in pesign mozilla-nss-tools');
+
+    my $work_dir = "/root/certs";
+    my $key_pw   = "suse";                         # Private key password
+    my $cdb_pw   = "openSUSE";                     # Certificate database password
+    my $mok_pw   = "novell";                       # Mokutil password
+    my $cert_cfg = "$work_dir/self_signed.conf";
+    my $pri_key  = "$work_dir/key.asc";
+    my $cert_pem = "$work_dir/cert.asc";
+    my $cert_p12 = "$work_dir/cert.p12";
+    my $cert_der = "$work_dir/ima_cert.der";
+
+    assert_script_run("mkdir -p $work_dir");
+
+    my $cert_pemdata = get_var("MOK_CERTCONF") // "openssl/gencert_conf/mok_cert.conf";
+    assert_script_run "wget --quiet " . data_url($cert_pemdata) . " -O $cert_cfg";
+
+    # Use default expiration days (1 month)
+    assert_script_run("openssl req -x509 -new -passout $key_pw -batch -config $cert_cfg  -outform DER -out $cert_der  -keyout $pri_key");
+
     my $fstype     = 'ext4';
     my $sample_app = '/usr/bin/yes';
     my $sample_cmd = 'yes --version';
@@ -67,6 +87,7 @@ sub run {
     assert_script_run "chattr -i $sample_app";
     assert_script_run "setfattr -x security.evm $sample_app";
     validate_script_output "getfattr -m security.evm -d $sample_app", sub { m/^$/ };
+    script_run "getfattr -m . -d $sample_app";
 
     replace_grub_cmdline_settings('evm=fix ima_appraise=fix', '', update_grub => 1);
 
@@ -74,6 +95,7 @@ sub run {
     $self->wait_boot(textmode => 1);
     $self->select_serial_terminal;
 
+    assert_script_run "/sys/kernel/security/evm";
     my $ret = script_output($sample_cmd, 30, proceed_on_failure => 1);
     die "$sample_app should not have permission to run" if ($ret !~ "\Q$sample_app\E: *Permission denied");
 }
