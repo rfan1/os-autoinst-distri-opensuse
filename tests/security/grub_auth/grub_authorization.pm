@@ -24,13 +24,14 @@
 #             3) Wrong user/password is not able access the grub
 #
 # Maintainer: rfan1 <richard.fan@suse.com>
-# Tags: poo#81721, tc#1768659
+# Tags: poo#81721, poo#95548, tc#1768659
 
 use base 'opensusebasetest';
 use strict;
 use warnings;
 use testapi;
 use base 'consoletest';
+use Utils::Architectures 'is_aarch64';
 
 my $sup_user     = 'admin';
 my $sup_passwd   = 'pw_admin';
@@ -43,22 +44,40 @@ sub grub_auth_oper {
     my $para = shift;
     enter_cmd("reboot");
     if ($para eq "operator") {
-        assert_screen("grub_auth_boot_menu_entry", timeout => 90);
+        if (is_aarch64) {
+            # On aarch64,  handle "UEFI Firmware Settings" menu entry
+            assert_screen("grub_uefi_firmware_menu_entry", timeout => 90);
+            send_key_until_needlematch("grub_auth_boot_menu_entry", "down", 5, 2);
+        }
+        else {
+            assert_screen("grub_auth_boot_menu_entry", timeout => 90);
+        }
         send_key("ret");
         assert_screen("grub_auth_super_user_login");
         enter_cmd("$sup_user");
         enter_cmd("$sup_passwd");
     }
     elsif ($para eq "maintainer") {
-        assert_screen("grub_auth_boot_menu_entry_maintainer", timeout => 90);
-        send_key("down");
+        if (is_aarch64) {
+            assert_screen("grub_uefi_firmware_menu_entry", timeout => 90);
+        }
+        else {
+            assert_screen("grub_auth_boot_menu_entry", timeout => 90);
+        }
+        send_key_until_needlematch("grub_auth_boot_menu_entry_maintainer", "down", 5, 2);
         send_key("ret");
         assert_screen("grub_auth_maintain_user_login");
         enter_cmd("$maint_user");
         enter_cmd("$maint_passwd");
     }
     elsif ($para eq "grub_edit_mode") {
-        assert_screen("grub_auth_boot_menu_entry", timeout => 90);
+        if (is_aarch64) {
+            assert_screen("grub_uefi_firmware_menu_entry", timeout => 90);
+            send_key_until_needlematch("grub_auth_boot_menu_entry", "down", 5, 2);
+        }
+        else {
+            assert_screen("grub_auth_boot_menu_entry", timeout => 90);
+        }
         send_key("e");
         assert_screen("grub_auth_super_user_login");
         enter_cmd("$sup_user");
@@ -67,17 +86,34 @@ sub grub_auth_oper {
         send_key("ctrl-x");
     }
     elsif ($para eq "wrong_user_passwd") {
-        assert_screen("grub_auth_boot_menu_entry", timeout => 90);
+        if (is_aarch64) {
+            assert_screen("grub_uefi_firmware_menu_entry", timeout => 90);
+            send_key_until_needlematch("grub_auth_boot_menu_entry", "down", 5, 2);
+        }
+        else {
+            assert_screen("grub_auth_boot_menu_entry", timeout => 90);
+        }
         send_key("ret");
         assert_screen("grub_auth_super_user_login");
         enter_cmd("$test_user");
         enter_cmd("$test_passwd");
-        assert_screen("grub_auth_boot_menu_entry");
+        if (is_aarch64) {
+            assert_screen("grub_uefi_firmware_menu_entry", timeout => 90);
+            send_key_until_needlematch("grub_auth_boot_menu_entry", "down", 5, 2);
+        }
+        else {
+            assert_screen("grub_auth_boot_menu_entry");
+        }
         send_key("ret");
         assert_screen("grub_auth_super_user_login");
         enter_cmd("$sup_user");
         enter_cmd("$test_passwd");
-        assert_screen("grub_auth_boot_menu_entry");
+        if (is_aarch64) {
+            assert_screen("grub_uefi_firmware_menu_entry", timeout => 90);
+        }
+        else {
+            assert_screen("grub_auth_boot_menu_entry");
+        }
     }
 }
 
@@ -94,8 +130,8 @@ sub run {
     assert_script_run("rm -rf /tmp/sup_passwd_hash");
     assert_script_run("rm -rf /tmp/maint_passwd_hash");
 
-    # Make sure both super user and maintainer can access the grub
-    # the sure user can edit the existing boot menu entries
+    # Make sure both super user and maintainer can access the grub,
+    # The super user can edit the existing boot menu entries
     foreach my $i ("operator", "maintainer", "grub_edit_mode") {
         grub_auth_oper($i);
         assert_screen("linux-login", timeout => 90);
