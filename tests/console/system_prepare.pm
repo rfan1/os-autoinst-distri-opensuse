@@ -31,7 +31,10 @@ use warnings;
 
 sub run {
     my ($self) = @_;
-    select_console 'root-console';
+    select_console('user-console', ensure_tty_selected => 0, skip_setterm => 1);
+    my $password = $testapi::password;
+    type_string("sudo -i\n");
+    type_string("$password\n");
 
     ensure_serialdev_permissions;
 
