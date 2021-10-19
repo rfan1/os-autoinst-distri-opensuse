@@ -18,7 +18,7 @@
       <li><a href="#is_network_manager_default">is_network_manager_default</a></li>
       <li><a href="#continue_info_network_manager_default">continue_info_network_manager_default</a></li>
       <li><a href="#accept_warning_network_manager_default">accept_warning_network_manager_default</a></li>
-      <li><a href="#workaround_suppress_lvm_warnings">workaround_suppress_lvm_warnings</a></li>
+      <li><a href="#wait_for_exit">wait_for_exit</a></li>
     </ul>
   </li>
 </ul><h1>lib/y2_module_basetest.pm</h1>
@@ -51,15 +51,13 @@
 
 <p>Click on OK when appears a warning indicating that network interfaces are controlled by Network Manager.</p>
 
-<h2 id="workaround_suppress_lvm_warnings">workaround_suppress_lvm_warnings</h2>
+<h2 id="wait_for_exit">wait_for_exit</h2>
 
-<pre><code> workaround_suppress_lvm_warnings();</code></pre>
+<pre><code> wait_for_exit(module =&gt; $module, timeout =&gt; $timeout);</code></pre>
 
-<p>LVM is polluting stdout with leaked invocation warnings because of file descriptor 3 is assigned to /root/.bash_history.</p>
+<p>Wait for string yast2-$module-status-0 (which has been previously used to open the module) to appear in the serial output using a timeout in order to ensure that the module exited.</p>
 
-<p>record_soft_failure if is &#39;is_tumbleweed&#39; for issue &#39;bsc#1124481 - LVM is polluting stdout with leaked invocation warnings&#39;.</p>
-
-<p>The workaround suppresses the warnings by setting the environment variable LVM_SUPPRESS_FD_WARNINGS.</p>
+<p><code>module</code> module to wait for exit. <code>timeout</code> timeout to wait on the serial.</p>
 
 
 </body>
