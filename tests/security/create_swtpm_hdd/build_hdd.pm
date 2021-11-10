@@ -23,6 +23,8 @@ sub run {
     # Install tpm and tpm2 related packages, then we can verify the swtpm function
     zypper_call("in tpm-tools tpm-quote-tools tpm2-0-tss tpm2-tss-engine tpm2.0-abrmd tpm2.0-tools trousers");
     assert_script_run("systemctl enable tcsd");
+    my $script_output = script_output("ls -l /dev/tpm*", proceed_on_failure => 1);
+    record_info("tpm device information: ", "$script_output");
 
     # Modify the grub setting with "grub timeout=1"
     assert_script_run("sed -i 's/GRUB_TIMEOUT=.*\$/GRUB_TIMEOUT=1/' /etc/default/grub");
