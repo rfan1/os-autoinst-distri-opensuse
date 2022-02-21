@@ -12,6 +12,7 @@ use strict;
 use warnings;
 use base 'opensusebasetest';
 use testapi;
+use utils 'script_retry';
 
 sub run {
     my $self = shift;
@@ -26,7 +27,8 @@ sub run {
     assert_script_run "mkdir $test_enc_dir";
     assert_script_run "cd $test_enc_dir";
     assert_script_run "echo tpm2test > $test_file";
-    assert_script_run "tpm2tss-genkey -a rsa -s 2048 $rsa_key";
+    assert_script_run "tpm2_clear -c -p";
+    script_retry "tpm2tss-genkey -a rsa -s 2048 $rsa_key", retry => 5;
     assert_script_run "openssl rsa -engine tpm2tss -inform engine -in $rsa_key -pubout -outform pem -out $rsa_key.pub";
     assert_script_run "openssl pkeyutl -pubin -inkey $rsa_key.pub -in $test_file -encrypt -out $enc_file";
     assert_script_run "openssl pkeyutl -engine tpm2tss -keyform engine -inkey $rsa_key -decrypt -in $enc_file -out $test_file.decrypt";
