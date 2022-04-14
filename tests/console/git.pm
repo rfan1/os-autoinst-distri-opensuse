@@ -20,6 +20,7 @@ use strict;
 use warnings;
 use testapi;
 use utils qw(zypper_call);
+use Utils::Backends 'is_pvm';
 
 sub run {
     my $username = $testapi::username;
@@ -52,6 +53,12 @@ sub run {
 
     # clean up
     assert_script_run("rm -rf ~/repos ~/os-autoinst*");
+}
+
+sub test_flags {
+    if (get_var('FIPS_ENABLED') && is_pvm) {
+        return {fatal => 0};
+    }
 }
 
 1;

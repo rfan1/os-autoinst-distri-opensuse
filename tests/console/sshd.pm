@@ -28,6 +28,7 @@ use utils qw(systemctl exec_and_insert_password zypper_call random_string clear_
 use version_utils qw(is_upgrade is_sle is_tumbleweed is_leap is_opensuse);
 use services::sshd;
 use ssh_crypto_policy;
+use Utils::Backends 'is_pvm';
 
 # The test disables the firewall, if true reenable afterwards.
 my $reenable_firewall = 0;
@@ -135,7 +136,12 @@ sub cleanup() {
 }
 
 sub test_flags {
-    return get_var('PUBLIC_CLOUD') ? {milestone => 0, no_rollback => 1} : {milestone => 1, fatal => 1};
+    if (get_var('FIPS_ENABLED') && is_pvm) {
+        return {fatal => 0};
+    }
+    else {
+        return get_var('PUBLIC_CLOUD') ? {milestone => 0, no_rollback => 1} : {milestone => 1, fatal => 1};
+    }
 }
 
 1;
