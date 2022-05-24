@@ -36,7 +36,7 @@
 #   $audit_log" and fail test.
 # - upload /var/log/apache2/error_log and audit.log
 # Maintainer: llzhao <llzhao@suse.com>
-# Tags: poo#48773, tc#1695946
+# Tags: poo#48773, tc#1695946, poo#111036
 
 
 use base apparmortest;
@@ -147,6 +147,15 @@ sub run {
     }
     if ($script_output =~ m/type=AVC .*apparmor=.*DENIED.* operation=.*profile_replace.* profile=.*httpd-prefork.*adminer.*/sx) {
         record_info("ERROR", "There are denied profile_replace records found in $audit_log", result => 'fail');
+        $self->result('fail');
+    }
+    # Due to bsc#1191684, add following check points as well
+    if ($script_output =~ m/type=AVC .*apparmor=.*DENIED.* operation=.*file_receive.* profile=.*httpd-prefork.*/sx) {
+        record_info("ERROR", "There are denied file_receive records found in $audit_log", result => 'fail');
+        $self->result('fail');
+    }
+    if ($script_output =~ m/type=AVC .*apparmor=.*DENIED.* operation=.*open.* profile=.*httpd-prefork.*/sx) {
+        record_info("ERROR", "There are denied open records found in $audit_log", result => 'fail');
         $self->result('fail');
     }
 
