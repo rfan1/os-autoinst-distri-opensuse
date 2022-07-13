@@ -50,7 +50,7 @@ sub set_svirt_domain_elements {
 
         # show this on screen and make sure that kernel and initrd are actually saved
         enter_cmd "wget $repo/boot/s390x/initrd -O $zkvm_img_path/$name.initrd";
-        assert_screen "initrd-saved";
+        assert_screen "initrd-saved", 90;
         enter_cmd "wget $repo/boot/s390x/linux -O $zkvm_img_path/$name.kernel";
         assert_screen "kernel-saved";
     }
