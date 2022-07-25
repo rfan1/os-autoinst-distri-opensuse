@@ -15,7 +15,7 @@ use utils;
 use Tomcat::Utils;
 
 # allow a 60 second timeout for asserting needles
-use constant TIMEOUT => 60;
+use constant TIMEOUT => 120;
 
 # test all WebSocket examples
 sub test_all_examples() {

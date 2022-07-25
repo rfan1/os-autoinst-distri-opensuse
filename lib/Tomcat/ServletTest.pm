@@ -16,7 +16,7 @@ use Tomcat::Utils;
 use version_utils 'is_sle';
 
 # allow a TIMEOUT second timeout for asserting needles
-use constant TIMEOUT => 60;
+use constant TIMEOUT => 90;
 
 # test all Servlet examples
 sub test_all_examples() {
@@ -91,7 +91,7 @@ sub sessions() {
     send_key('tab');
     type_string('1');
     send_key('ret');
-    assert_screen('tomcat-sessions-example-result-1', TIMEOUT);
+    assert_screen('tomcat-sessions-example-result-1', 120);
     assert_and_dclick('tomcat-sessions-example-2');
     type_string('attr2');
     send_key('tab');
