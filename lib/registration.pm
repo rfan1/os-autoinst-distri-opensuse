@@ -844,6 +844,8 @@ sub fill_in_reg_server {
         save_screenshot;
         send_key "alt-c";
         type_string $regcode if ($regcode);
+	wait_still_screen 5;
+	save_screenshot;
     }
     else {
         send_key "alt-i";
