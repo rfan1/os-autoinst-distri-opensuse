@@ -46,24 +46,24 @@ sub tb_setup_account {
 
     if (check_screen 'thunderbird-new-gui') {
         $new_gui = 1;
-        wait_still_screen(2, 4);
+        wait_still_screen(4, 8);
         type_string "SUSE Test";
         send_key 'tab';
         wait_screen_change { type_string "$mail_box" };
         send_key 'tab';
         wait_screen_change { type_string "$mail_passwd" };
-        wait_still_screen(2, 4);
+        wait_still_screen(4, 8);
         send_key 'tab';
         send_key 'tab';
         send_key 'spc';    # configure manually
-        wait_still_screen(2, 4);
+        wait_still_screen(4, 8);
         save_screenshot;
         send_key 'tab';    # scroll page down to see configuration options
         assert_and_click 'thunderbird_know-your-rights';
     }
     else {
         send_key "alt-n";
-        wait_still_screen(2, 4);
+        wait_still_screen(4, 8);
         type_string "SUSE Test";
         send_key "alt-e";
         wait_screen_change { type_string "$mail_box" };
@@ -113,7 +113,7 @@ sub tb_setup_account {
             assert_and_click 'thunderbird_wizard-retest';
             send_key_until_needlematch 'thunderbird_wizard-done', 'tab', 16, 1;
             assert_and_click 'thunderbird_wizard-done';
-            wait_still_screen(2, 4);
+            wait_still_screen(4, 8);
             assert_and_click 'thunderbird_SSL_done_config' unless check_screen('thunderbird_confirm_security_exception');
             assert_and_click "thunderbird_confirm_security_exception";
             wait_still_screen(2);
@@ -124,11 +124,11 @@ sub tb_setup_account {
         }
         else {
             assert_and_click 'thunderbird_startssl-selected-for-imap';
-            wait_still_screen(1);
+            wait_still_screen(2);
             assert_and_click 'thunderbird_security-select-none';
-            wait_still_screen(1);
+            wait_still_screen(2);
             assert_and_click 'thunderbird_startssl-selected-for-smtp';
-            wait_still_screen(1);
+            wait_still_screen(2);
             assert_and_click 'thunderbird_security-select-none';
             if (check_screen 'thunderbird_username') {
                 record_info 'bsc#1191853';
@@ -166,11 +166,11 @@ sub tb_setup_account {
         }
         else {
             assert_and_click 'thunderbird_startssl-selected-for-imap';
-            wait_still_screen(1);
+            wait_still_screen(2);
             assert_and_click 'thunderbird_security-select-none';
-            wait_still_screen(1);
+            wait_still_screen(2);
             assert_and_click 'thunderbird_startssl-selected-for-smtp';
-            wait_still_screen(1);
+            wait_still_screen(2);
             assert_and_click 'thunderbird_security-select-none';
             assert_and_click 'thunderbird_wizard-retest';
             assert_and_click 'thunderbird_wizard-done';
@@ -209,7 +209,7 @@ sub tb_send_message {
     send_key "tab";
     type_string "Test email send and receive.";
     assert_and_click "thunderbird_send-message";
-    wait_still_screen(2, 4);
+    wait_still_screen(4, 8);
 
     if ($hostname eq 'client') {
         while (1) {
