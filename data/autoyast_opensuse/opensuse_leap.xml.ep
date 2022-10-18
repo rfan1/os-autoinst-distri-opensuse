@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<!DOCTYPE profile>
+<profile xmlns="http://www.suse.com/1.0/yast2ns" xmlns:config="http://www.suse.com/1.0/configns">
+  <general>
+    <mode>
+      <confirm config:type="boolean">false</confirm>
+    </mode>
+  </general>
+  <bootloader>
+    <global>
+      <timeout config:type="integer">-1</timeout>
+    </global>
+    % if ($check_var->('UEFI', '1')) {
+    <loader_type>grub2-efi</loader_type>
+    % }
+  </bootloader>
+  <login_settings>
+    <autologin_user>bernhard</autologin_user>
+  </login_settings>
+  <networking>
+    <keep_install_network config:type="boolean">true</keep_install_network>
+  </networking>
+  <services-manager>
+    <services>
+      <enable config:type="list">
+        <service>chronyd</service>
+        % if ($check_var->('DESKTOP', 'gnome')) {
+        <service>NetworkManager</service>
+        % }
+      </enable>
+    </services>
+  </services-manager>
+  <software>
+    <install_recommended config:type="boolean">true</install_recommended>
+    <online_repos_preselected config:type="boolean">false</online_repos_preselected>
+    <products config:type="list">
+      <product>Leap</product>
+    </products>
+    <packages t="list">
+      <package>chrony</package>
+      % if ($check_var->('DESKTOP', 'gnome')) {
+      <package>NetworkManager</package>
+      % }
+    </packages>
+    <patterns config:type="list">
+      <pattern>apparmor</pattern>
+      <pattern>base</pattern>
+      % if ($check_var->('DESKTOP', 'gnome')) {
+      <pattern>gnome</pattern>
+      % }
+      % if ($check_var->('DESKTOP', 'kde')) {
+      <pattern>kde</pattern>
+      % }
+      % if ($check_var->('DESKTOP', 'textmode')) {
+      <pattern>enhanced_base</pattern>
+      <pattern>minimal_base</pattern>
+      % }
+      % if ($check_var->('SYSTEM_ROLE', 'serverro')) {
+      <pattern>transactional_base</pattern>
+      % }
+    </patterns>
+  </software>
+  <users config:type="list">
+    <user>
+      <fullname>bernhard</fullname>
+      <encrypted config:type="boolean">false</encrypted>
+      <user_password>nots3cr3t</user_password>
+      <username>bernhard</username>
+    </user>
+    <user>
+      <encrypted config:type="boolean">false</encrypted>
+      <user_password>nots3cr3t</user_password>
+      <username>root</username>
+    </user>
+  </users>
+</profile>
