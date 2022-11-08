@@ -25,13 +25,15 @@ use warnings;
 use utils;
 use version_utils 'is_tumbleweed';
 
-
 sub run {
+    my ($self) = @_;
+
     select_serial_terminal;
 
     zypper_call('in openvswitch ovn ovn-central ovn-devel ovn-docker ovn-host ovn-vtep', timeout => 300);
 
     # Start the openvswitch and OVN daemons
+    systemctl('stop apparmor.service');
     systemctl 'start openvswitch ovn-controller ovn-northd', timeout => 200;
 
     assert_script_run "ovn-sbctl set-connection ptcp:6642";
