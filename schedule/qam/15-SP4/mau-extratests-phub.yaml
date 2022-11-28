@@ -6,6 +6,7 @@ schedule:
   - console/prepare_test_data
   - console/consoletest_setup
   - console/add_phub_extension
+  - console/python_flake8
   # - console/python_scientific Removed because of bsc#1198891
   - '{{sle15_x86_64}}'
   # - console/python_flake8 Removed because of bsc#1198893
