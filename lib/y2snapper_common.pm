@@ -128,7 +128,7 @@ sub y2snapper_new_snapshot {
     }
 
     # Make sure the snapshot is listed in the main window
-    send_key_until_needlematch([qw(yast2_snapper-new_snapshot yast2_snapper-new_snapshot_selected)], 'pgdn');
+    send_key_until_needlematch([qw(yast2_snapper-new_snapshot yast2_snapper-new_snapshot_selected)], 'pgdn', 20, 2);
     $self->y2snapper_close_snapper_module($ncurses);
 }
 
