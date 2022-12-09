@@ -197,6 +197,7 @@ sub load_network_tests {
     loadtest 'microos/libzypp_config';
     # This method is only loaded in ALP
     loadtest 'console/firewalld';
+    loadtest 'microos/networkmanager';
 }
 
 sub load_qemu_tests {
