@@ -64,6 +64,8 @@ sub run {
             # Check, if there are more updates available
             elsif (match_has_tag('updates_available-tray')) {
                 # Look again
+		# Wait some time for update completes and refreshes
+                wait_still_screen 30;
                 if (check_screen 'updates_none', 30) {
                     # There were no updates but the tray icon persisted.
                     record_soft_failure 'boo#1041112';
