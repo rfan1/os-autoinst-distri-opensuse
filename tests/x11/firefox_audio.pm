@@ -22,6 +22,13 @@ use testapi;
 
 sub run {
     my ($self) = @_;
+    select_console 'root-console';
+    # Quit firefox if any
+    script_run('pkill firefox');
+    my $ret = script_run('ps -ef | grep firefox | grep childID');
+    if ($ret) {
+        die('firefox is not correctly closed, please check your setup is in right status');
+    }
     select_console 'x11';
     start_audiocapture;
     x11_start_program('firefox ' . data_url('1d5d9dD.oga'), target_match => [qw(command-not-found test-firefox_audio-1)], match_timeout => 90);
