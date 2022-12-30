@@ -18,7 +18,7 @@ use base "consoletest";
 use strict;
 use warnings;
 use testapi;
-use utils 'assert_screen_with_soft_timeout';
+use utils qw(zypper_call assert_screen_with_soft_timeout);
 use version_utils 'is_jeos';
 
 sub settle_load {
@@ -68,6 +68,10 @@ sub run {
 
     # return dmesg output to normal
     assert_script_run "dmesg -n 1";
+
+    # Remove leap 15.4 kernel as tests only
+    record_info('Remove the old kernel');
+    zypper_call('rm kernel-default-5.14.21-150400.22.1.x86_64');
 }
 
 sub test_flags {
