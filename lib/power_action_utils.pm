@@ -114,6 +114,7 @@ sub reboot_x11 {
             prepare_system_shutdown;
 
             send_key 'ret';    # Confirm
+            send_key 'ret' if (check_screen 'xen_reboot_authenticate', 20);
         }
     }
 }
@@ -295,7 +296,7 @@ sub power_action {
     }
 
     my $soft_fail_data;
-    my $shutdown_timeout = 60;
+    my $shutdown_timeout = (check_var('VIRSH_VMM_FAMILY', 'xen')) ? 120 : 60;
 
     if (is_sle('15-sp1+') && check_var('DESKTOP', 'textmode') && ($action eq 'poweroff')) {
         $soft_fail_data = {bugref => 'bsc#1158145', soft_timeout => 60, timeout => $shutdown_timeout *= 3};
