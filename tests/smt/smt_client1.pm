@@ -29,7 +29,7 @@ sub run {
     mutex_wait 'barrier_setup_done';
     barrier_wait 'smt_setup';
     #registration of client
-    assert_script_run 'wget --no-check-certificate https://SERVER/repo/tools/clientSetup4SMT.sh';
+    assert_script_run 'wget --no-check-certificate http://SERVER/repo/tools/clientSetup4SMT.sh';
     assert_script_run 'chmod a+x clientSetup4SMT.sh';
     assert_script_run 'echo y | ./clientSetup4SMT.sh --host https://server --regcert https://server/smt.crt';    #needs yes
     assert_script_run 'SUSEConnect -p SLES/12.5/x86_64 --url https://server';
