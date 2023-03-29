@@ -6,14 +6,14 @@
 # Summary: Check for any orphaned packages. There should be none in fully
 #   supported systems
 # Maintainer: QE Core <qe-core@suse.de>
-# Tags: poo#19606
+# Taselect_serial_terminalgs: poo#19606
 
 use Mojo::Base qw(consoletest);
-use Mojo::File 'path';
 use testapi;
 use utils 'zypper_call';
 use version_utils 'is_upgrade';
 use Utils::Logging 'export_logs';
+use serial_terminal 'select_serial_terminal';
 
 # Performing a DVD/Offline system upgrade cannot update
 # all potential packages already present on the SUT
@@ -55,7 +55,7 @@ sub compare_orphans_lists {
 }
 
 sub run {
-    select_console 'root-console';
+    select_serial_terminal;
 
     record_info((is_offline_upgrade_or_livecd) ? 'Upgrade/LiveCD' : 'No upgrade/LiveCD', 'Upgraded or installed from LIVECD can possibly cause orphans');
 
@@ -63,13 +63,12 @@ sub run {
     # Orphans are also expected in JeOS without SDK module (jeos-firstboot, jeos-license and live-langset-data)
     # Save the orphaned packages list to one log file and upload the log, so QA can use this log to report bug
     # Filter out zypper warning messages and release or skelcd packages
-
-    script_run(
-q[zypper --quiet packages --orphaned | awk -F'|' 'intable && NR>2 {print $3} /^-/ { intable=1 }' | grep -v '\(release-DVD\|release-dvd\|openSUSE-release\|skelcd\)' > /tmp/orphaned.log],
+    my @orphans = split('\n',
+        script_output
+        q[zypper --quiet packages --orphaned | tee -a /tmp/orphaned.log | awk -F'|' 'intable && NR>2 {print $3} /^-/ { intable=1 }' | grep -v '\(release-DVD\|release-dvd\|openSUSE-release\|skelcd\)'],
+        proceed_on_failure => 1,
         timeout => 180
     );
-    upload_logs('/tmp/orphaned.log', (log_name => 'orphaned.log'));
-    my @orphans = split(/\n/, path('ulogs/orphaned.log')->slurp);
 
     if (((scalar @orphans) > 0) && !is_offline_upgrade_or_livecd) {
         compare_orphans_lists(zypper_orphans => \@orphans)
