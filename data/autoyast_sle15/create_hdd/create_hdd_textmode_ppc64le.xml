@@ -7,12 +7,12 @@
       <gfxmode>auto</gfxmode>
       <hiddenmenu>false</hiddenmenu>
       <os_prober>false</os_prober>
-      <secure_boot>true</secure_boot>
-      <terminal>gfxterm</terminal>
+      <secure_boot>false</secure_boot>
+      <terminal>console</terminal>
       <timeout t="integer">-1</timeout>
       <trusted_grub>false</trusted_grub>
       <update_nvram>true</update_nvram>
-      <xen_kernel_append>vga=gfx-1024x768x16</xen_kernel_append>
+      <xen_kernel_append>vga=gfx-1024x768x16 crashkernel=460M\&lt;4G</xen_kernel_append>
     </global>
     <loader_type>grub2</loader_type>
   </bootloader>
@@ -97,6 +97,40 @@
       </hosts_entry>
     </hosts>
   </host>
+  <kdump t="map">
+    <add_crash_kernel t="boolean">true</add_crash_kernel>
+    <crash_kernel>460M</crash_kernel>
+    <crash_xen_kernel>460M\&lt;4G</crash_xen_kernel>
+    <general t="map">
+      <KDUMPTOOL_FLAGS/>
+      <KDUMP_COMMANDLINE/>
+      <KDUMP_COMMANDLINE_APPEND/>
+      <KDUMP_CONTINUE_ON_ERROR>true</KDUMP_CONTINUE_ON_ERROR>
+      <KDUMP_COPY_KERNEL>yes</KDUMP_COPY_KERNEL>
+      <KDUMP_CPUS/>
+      <KDUMP_DUMPFORMAT>lzo</KDUMP_DUMPFORMAT>
+      <KDUMP_DUMPLEVEL>31</KDUMP_DUMPLEVEL>
+      <KDUMP_FREE_DISK_SIZE>64</KDUMP_FREE_DISK_SIZE>
+      <KDUMP_HOST_KEY/>
+      <KDUMP_IMMEDIATE_REBOOT>yes</KDUMP_IMMEDIATE_REBOOT>
+      <KDUMP_KEEP_OLD_DUMPS>5</KDUMP_KEEP_OLD_DUMPS>
+      <KDUMP_KERNELVER/>
+      <KDUMP_NETCONFIG>auto</KDUMP_NETCONFIG>
+      <KDUMP_NET_TIMEOUT>30</KDUMP_NET_TIMEOUT>
+      <KDUMP_NOTIFICATION_CC/>
+      <KDUMP_NOTIFICATION_TO/>
+      <KDUMP_POSTSCRIPT/>
+      <KDUMP_PRESCRIPT/>
+      <KDUMP_REQUIRED_PROGRAMS/>
+      <KDUMP_SAVEDIR>/var/crash</KDUMP_SAVEDIR>
+      <KDUMP_SMTP_PASSWORD/>
+      <KDUMP_SMTP_SERVER/>
+      <KDUMP_SMTP_USER/>
+      <KDUMP_TRANSFER/>
+      <KDUMP_VERBOSE>3</KDUMP_VERBOSE>
+      <KEXEC_OPTIONS/>
+    </general>
+  </kdump>
   <networking t="map">
     <dhcp_options t="map">
       <dhclient_client_id/>
@@ -122,7 +156,7 @@
       <rule t="map">
         <name>eth0</name>
         <rule>KERNELS</rule>
-        <value>0000:00:04.0</value>
+        <value>0000:00:02.0</value>
       </rule>
     </net-udev>
     <routing t="map">
@@ -148,88 +182,6 @@
     <ntp_servers t="list"/>
     <ntp_sync>manual</ntp_sync>
   </ntp-client>
-  <partitioning t="list">
-    <drive t="map">
-      <disklabel>gpt</disklabel>
-      <enable_snapshots t="boolean">true</enable_snapshots>
-      <partitions t="list">
-        <partition t="map">
-          <create t="boolean">true</create>
-          <filesystem t="symbol">vfat</filesystem>
-          <format t="boolean">true</format>
-          <partition_id t="integer">259</partition_id>
-          <partition_nr t="integer">1</partition_nr>
-          <resize t="boolean">false</resize>
-          <size>536870912</size>
-        </partition>
-        <partition t="map">
-          <create t="boolean">true</create>
-          <create_subvolumes t="boolean">true</create_subvolumes>
-          <filesystem t="symbol">btrfs</filesystem>
-          <format t="boolean">true</format>
-          <mount>/</mount>
-          <mountby t="symbol">uuid</mountby>
-          <partition_id t="integer">131</partition_id>
-          <partition_nr t="integer">2</partition_nr>
-          <quotas t="boolean">true</quotas>
-          <resize t="boolean">false</resize>
-          <size>29525803008</size>
-          <subvolumes t="list">
-            <subvolume t="map">
-              <copy_on_write t="boolean">false</copy_on_write>
-              <path>var</path>
-            </subvolume>
-            <subvolume t="map">
-              <copy_on_write t="boolean">true</copy_on_write>
-              <path>usr/local</path>
-            </subvolume>
-            <subvolume t="map">
-              <copy_on_write t="boolean">true</copy_on_write>
-              <path>tmp</path>
-            </subvolume>
-            <subvolume t="map">
-              <copy_on_write t="boolean">true</copy_on_write>
-              <path>srv</path>
-            </subvolume>
-            <subvolume t="map">
-              <copy_on_write t="boolean">true</copy_on_write>
-              <path>root</path>
-            </subvolume>
-            <subvolume t="map">
-              <copy_on_write t="boolean">true</copy_on_write>
-              <path>opt</path>
-            </subvolume>
-            <subvolume t="map">
-              <copy_on_write t="boolean">true</copy_on_write>
-              <path>home</path>
-            </subvolume>
-            <subvolume t="map">
-              <copy_on_write t="boolean">true</copy_on_write>
-              <path>boot/grub2/x86_64-efi</path>
-            </subvolume>
-            <subvolume t="map">
-              <copy_on_write t="boolean">true</copy_on_write>
-              <path>boot/grub2/i386-pc</path>
-            </subvolume>
-          </subvolumes>
-          <subvolumes_prefix>@</subvolumes_prefix>
-        </partition>
-        <partition t="map">
-          <create t="boolean">true</create>
-          <filesystem t="symbol">swap</filesystem>
-          <format t="boolean">true</format>
-          <mount>swap</mount>
-          <mountby t="symbol">uuid</mountby>
-          <partition_id t="integer">130</partition_id>
-          <partition_nr t="integer">3</partition_nr>
-          <resize t="boolean">false</resize>
-          <size>2148515328</size>
-        </partition>
-      </partitions>
-      <type t="symbol">CT_DISK</type>
-      <use>all</use>
-    </drive>
-  </partitioning>
   <proxy t="map">
     <enabled t="boolean">false</enabled>
   </proxy>
@@ -280,6 +232,8 @@
         <service>wickedd-dhcp4</service>
         <service>wickedd-dhcp6</service>
         <service>wickedd-nanny</service>
+        <service>kdump</service>
+        <service>kdump-early</service>
         <service>wicked</service>
         <service>sshd</service>
         <service>systemd-remount-fs</service>
@@ -294,15 +248,14 @@
       <package>snapper</package>
       <package>sle-module-server-applications-release</package>
       <package>sle-module-basesystem-release</package>
-      <package>shim</package>
       <package>openssh</package>
-      <package>mokutil</package>
       <package>kexec-tools</package>
-      <package>grub2-x86_64-efi</package>
+      <package>kdump</package>
+      <package>iprutils</package>
+      <package>grub2</package>
       <package>glibc</package>
       <package>firewalld</package>
       <package>e2fsprogs</package>
-      <package>dosfstools</package>
       <package>btrfsprogs</package>
       <package>autoyast2</package>
     </packages>
@@ -336,6 +289,13 @@
       <addon t="map">
         <arch>{{ARCH}}</arch>
         <name>sle-module-basesystem</name>
+        <reg_code/>
+        <release_type>nil</release_type>
+        <version>{{VERSION}}</version>
+      </addon>
+      <addon t="map">
+        <arch>{{ARCH}}</arch>
+        <name>sle-module-desktop-applications</name>
         <reg_code/>
         <release_type>nil</release_type>
         <version>{{VERSION}}</version>
@@ -380,7 +340,7 @@
       </password_settings>
       <shell>/bin/bash</shell>
       <uid>1000</uid>
-      <user_password>$6$vYbbuJ9WMriFxGHY$gQ7shLw9ZBsRcPgo6/8KmfDvQ/lCqxW8/WnMoLCoWGdHO6Touush1nhegYfdBbXRpsQuy/FTZZeg7gQL50IbA/</user_password>
+      <user_password>$6$8vQdjHw2U0WWJZUW$p/i1WE9tj7oYySp4w9xbBV5M/MS5DeADJ/Zmo05xiYvE3eL5/MpkFc038SmgjUcauy1LBdpnvA0rK48iG5X/r1</user_password>
       <username>bernhard</username>
     </user>
     <user t="map">
@@ -400,7 +360,7 @@
       </password_settings>
       <shell>/bin/bash</shell>
       <uid>0</uid>
-      <user_password>$6$gdDHoMtVLjs4CCzf$2tSvAdgvqrKo84pA59bEjZRh7IGMfv4u0Yl4hrRzPgFPWLd8RXWdn/boT7yM3K3BlTk57qyR0TZ/nMb9rlpzx1</user_password>
+      <user_password>$6$YmUopMIF118aTjOT$FAHsv.dpIs4q0BPRbHO3m.LMCm9Mbr5Cr/zg33F35zd1gFHnDrBUXjrny9OpucMUWASIoxWP8hcmUpgWdOAo//</user_password>
       <username>root</username>
     </user>
   </users>
