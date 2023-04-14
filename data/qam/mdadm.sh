@@ -391,6 +391,8 @@ for i in $(seq -w 1 $RANDOM_DATA_COPY_COUNT)
 do
   echo "Copying random file $i ..."
   run cp random_data.raw $tempmnt/random_$i.raw
+  run sync
+  sleep 1
 done 
 
 for i in $(seq -w 1 $RANDOM_DATA_COPY_COUNT)
