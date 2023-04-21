@@ -56,6 +56,43 @@ sub check_container_nspid {
     }
 }
 
+sub check_container_nspid {
+    # expect set hostpid
+    my $hostpid = shift;
+    my $config = 'hello-kubic.yaml';
+    my @errors = ();
+
+    record_info('NSPid', sprintf('Expect HostPid == %s', !!$hostpid ? 'True' : 'False'));
+
+    if ($hostpid) {
+        assert_script_run(qq[sed -i '/containers:/i\\      hostPID: true' $config]);
+    }
+
+    assert_script_run("podman play kube --replace $config");
+    my $pod = script_output(q[podman pod ps --format '{{ .Name }}']);
+    my $container = script_output(q[podman container ps --filter name=.*pod.* --format '{{ .Names }}']);
+    my $pid_on_host = script_output(qq[podman container inspect $container --format '{{ .State.Pid }}']);
+
+    my @pids = split(/\s+/, script_output("grep NSpid: /proc/$pid_on_host/status"));
+    shift @pids;
+    record_info('Detected', sprintf("%s", join(", ", @pids)));
+
+    my $pid_mode = script_output(qq[podman inspect $container --format '{{ .HostConfig.PidMode }}']);
+    if ($hostpid && $pid_mode ne 'host') {
+        push @errors, "HostConfig.PidMode should show 'host' when option 'hostPid: true' was used in the manifest file. Currently HostConfig.PidMore returns $pid_mode";
+    }
+
+    foreach (@pids) {
+        if ($_ == 1 && $hostpid) {
+            push @errors, "HostPid was set and PID=1 was found!";
+        }
+    }
+
+    if (@errors) {
+        die join("\n", @errors);
+    }
+}
+
 sub run {
     my ($self, $args) = @_;
     select_serial_terminal;
