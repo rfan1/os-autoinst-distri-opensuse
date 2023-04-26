@@ -129,6 +129,7 @@ sub run {
     my $skip_tags = (is_alp) ? '--skip-tags zypper' : '';
 
     # Check the playbook
+    assert_script_run(qq(sed -i '/\\[defaults\\]/a\\interpreter_python = /usr/bin/python3' /etc/ansible/ansible.cfg));
     assert_script_run "ansible-playbook -i hosts main.yaml --check $skip_tags", timeout => 300;
 
     # Run the ansible sanity test
