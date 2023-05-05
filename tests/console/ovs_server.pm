@@ -62,6 +62,7 @@ sub run {
     mutex_create 'barrier_setup_done';
 
     # Install the needed packages
+    zypper_call('ref');
     zypper_call('in openvswitch-ipsec tcpdump openvswitch-pki openvswitch-vtep', timeout => 300);
     systemctl 'start openvswitch', timeout => 200;
     systemctl 'start openvswitch-ipsec', timeout => 200;
