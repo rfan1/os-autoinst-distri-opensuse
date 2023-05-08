@@ -284,6 +284,11 @@
     <packages config:type="list">
       <package>openssh</package>
       <package>firewalld</package>
+      <!-- Workaround for bsc#1202234: [addon]-release packages are missing after autoyast installation. -->
+      % foreach (values %$addons) {
+      <package><%= lc($_->{name}) %>-release</package>
+      % }
+      <!-- end of workaround -->
     </packages>
     % }
     <patterns config:type="list">

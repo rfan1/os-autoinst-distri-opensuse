@@ -90,19 +90,17 @@ EOT
 
 sub run {
     select_console 'root-console';
-
     # contm is not supported on LTSS products bsc#1181835
     if (get_var('SCC_REGCODE_LTSS')) {
         add_suseconnect_product(get_addon_fullname('contm'));
     }
 
-    # Host is used as server of libssh test
-    my ($running_version, $sp, $host_distri) = get_os_release;
-    install_docker_when_needed($host_distri);
-    # zypper_call("--gpg-auto-import-keys in docker libvirt-daemon-qemu qemu-kvm qemu-block-ssh");
     zypper_call("in libvirt-daemon-qemu qemu-kvm qemu-block-ssh");
     #  systemctl("start docker.service libvirtd.service sshd.service");
     systemctl("start libvirtd.service sshd.service");
+    # Host is used as server of libssh test
+    my ($running_version, $sp, $host_distri) = get_os_release;
+    install_docker_when_needed($host_distri);
     create_image if (script_output('docker images') !~ m/libssh_image/);    #Skip building If image is already available. This is for Fips test
     assert_script_run("iptables -I INPUT -p tcp --dport 22 -j ACCEPT");
     assert_script_run("mkdir /tmp/test; echo -n libssh_testcase001 > /tmp/test/libssh_testfile");
