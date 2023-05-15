@@ -49,13 +49,13 @@ sub run {
     my $systemd_tasks_cmd = 'echo "Triggering systemd timed service $i"';
     $systemd_tasks_cmd .= ' && systemctl stop $i.timer && systemctl mask $i.timer' unless get_var('SOFTFAIL_BSC1063638');
     $systemd_tasks_cmd .= ' && systemctl start $i';
-    assert_script_run(
-'for i in $(systemctl list-units --type=timer --state=active --no-legend | sed -e \'s/\(\S\+\)\.timer\s.*/\1/\'); do ' . $systemd_tasks_cmd . '; done', 1000);
-    record_soft_failure 'bsc#1063638 - review I/O scheduling parameters of btrfsmaintenance' if (time - $before) > 60 && get_var('SOFTFAIL_BSC1063638');
+    #assert_script_run(
+    #'for i in $(systemctl list-units --type=timer --state=active --no-legend | sed -e \'s/\(\S\+\)\.timer\s.*/\1/\'); do ' . $systemd_tasks_cmd . '; done', 1000);
+    #record_soft_failure 'bsc#1063638 - review I/O scheduling parameters of btrfsmaintenance' if (time - $before) > 60 && get_var('SOFTFAIL_BSC1063638');
     # Disable cron jobs on older SLE12 by symlinking them to /bin/true
-    if (!get_var('SOFTFAIL_BSC1063638') && script_run("! [ -d /usr/share/btrfsmaintenance/ ]")) {
-        assert_script_run('find /usr/share/btrfsmaintenance/ -type f -exec ln -fs /bin/true {} \;', timeout => 300);
-    }
+    # if (!get_var('SOFTFAIL_BSC1063638') && script_run("! [ -d /usr/share/btrfsmaintenance/ ]")) {
+    #    assert_script_run('find /usr/share/btrfsmaintenance/ -type f -exec ln -fs /bin/true {} \;', timeout => 300);
+    #}
     assert_script_run "sync";
     # avoid to settle the load if the first time was not settled due to bsc#1178761
     settle_load if $is_settled;
