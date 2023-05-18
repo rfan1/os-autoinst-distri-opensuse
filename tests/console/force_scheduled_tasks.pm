@@ -18,7 +18,7 @@ use base "consoletest";
 use strict;
 use warnings;
 use testapi;
-use utils 'assert_screen_with_soft_timeout';
+use utils qw(assert_screen_with_soft_timeout zypper_call);
 use version_utils 'is_jeos';
 
 sub settle_load {
@@ -48,7 +48,8 @@ sub run {
     }
     my $systemd_tasks_cmd = 'echo "Triggering systemd timed service $i"';
     $systemd_tasks_cmd .= ' && systemctl stop $i.timer && systemctl mask $i.timer' unless get_var('SOFTFAIL_BSC1063638');
-    $systemd_tasks_cmd .= ' && systemctl start $i';
+    # add a temorary workaround for bsc#1211459, many tests are blocked due to this bug.
+    $systemd_tasks_cmd .= ' && systemctl start $i' unless get_var('BSC1211459');
     assert_script_run(
 'for i in $(systemctl list-units --type=timer --state=active --no-legend | sed -e \'s/\(\S\+\)\.timer\s.*/\1/\'); do ' . $systemd_tasks_cmd . '; done', 1000);
     record_soft_failure 'bsc#1063638 - review I/O scheduling parameters of btrfsmaintenance' if (time - $before) > 60 && get_var('SOFTFAIL_BSC1063638');
