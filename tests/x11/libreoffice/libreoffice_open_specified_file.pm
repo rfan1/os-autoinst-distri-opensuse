@@ -46,6 +46,8 @@ sub run {
         # close document
         send_key "ctrl-f4";
         wait_still_screen(2);
+        assert_and_click('libre-office-close-doc') if check_screen("libreoffice-test-$tag");
+        wait_still_screen(2);
         if (check_screen('generic-desktop')) {
             record_soft_failure 'bsc#1196648';
             $self->libreoffice_start_program('libreoffice');
