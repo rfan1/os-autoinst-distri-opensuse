@@ -64,7 +64,7 @@ sub run {
     ensure_unlocked_desktop;
 
     my @updates_tags = qw(updates_none updates_available package-updater-privileged-user-warning updates_restart_application updates_installed-restart);
-    my @updates_installed_tags = qw(updates_none updates_installed-logout updates_installed-restart updates_restart_application updates_failed);
+    my @updates_installed_tags = qw(updates_none updates_installed-logout updates_installed-restart updates_restart_application updates_failed software_not_signed);
 
     setup_system;
 
@@ -107,6 +107,10 @@ sub run {
                     setup_system;
                 }
                 next;
+            }
+            elsif (match_has_tag("software_not_signed")) {
+                assert_and_click("software_not_signed");
+                save_screenshot;
             }
             elsif (match_has_tag("updates_installed-logout") || match_has_tag("updates_restart_application")) {
                 wait_screen_change { send_key "alt-c"; };    # close
