@@ -20,9 +20,10 @@ our @EXPORT = qw(query_smelt get_incident_packages get_packagebins_in_modules);
 sub query_smelt {
     my $graphql = $_[0];
     my $transaction = Mojo::UserAgent->new->post("https://smelt.suse.de/graphql/" => json => {query => "$graphql"});
-    if ($transaction->res->code != 200) {
-        record_info "Response: $transaction->res->code", "Unexpected response code from SMELT";
-        die "Unexpected response code from SMELT: $transaction->res->code";
+    my $resp_code = $transaction->res->code;
+    if ($ resp_code!= 200) {
+        record_info "Response: $resp_code", "Unexpected response code from SMELT";
+        die "Unexpected response code from SMELT: $resp_code";
     }
     return $transaction->res->body;
 }
