@@ -1,0 +1,18 @@
+name: create_hdd_module_combinations_all_patterns_sle12sp5
+description:    >
+  Create support images with module combinations and all patterns on SLE 12 SP5
+conditional_schedule:
+  svirt_upload_assets:
+    ARCH:
+      s390x:
+        - shutdown/svirt_upload_assets
+schedule:
+  - installation/bootloader_start
+  - boot/boot_to_desktop
+  - update/patch_sle
+  - console/scc_deregistration
+  - console/force_scheduled_tasks
+  - shutdown/grub_set_bootargs
+  - shutdown/cleanup_before_shutdown
+  - shutdown/shutdown
+  - '{{svirt_upload_assets}}'
