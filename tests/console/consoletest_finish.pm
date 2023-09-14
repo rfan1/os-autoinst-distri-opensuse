@@ -31,6 +31,11 @@ sub run {
     my $self = shift;
 
     my $console = select_console 'root-console';
+    assert_script_run 'systemctl enable serial-getty@hvc1.service';
+    assert_script_run 'systemctl start serial-getty@hvc1.service';
+    power_action('reboot', textmode => 1);
+    $self->wait_boot(bootloader_time => get_var('BOOTLOADER_TIMEOUT', 300));
+    select_console 'root-console';
     # cleanup
     enter_cmd "loginctl --no-pager";
     wait_still_screen(2);
