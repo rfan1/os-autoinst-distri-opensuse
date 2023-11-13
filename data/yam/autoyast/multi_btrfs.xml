@@ -18,6 +18,11 @@
                 <version>{{VERSION}}</version>
                 <arch>{{ARCH}}</arch>
             </addon>
+            <addon t="map">
+                <name>sle-module-basesystem</name>
+                <version>{{VERSION}}</version>
+                <arch>{{ARCH}}</arch>
+            </addon>
         </addons>
     </suse_register>
     <bootloader>
