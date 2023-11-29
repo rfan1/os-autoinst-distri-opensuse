@@ -90,6 +90,7 @@ sub nfs_server_configuration {
     send_key 'alt-n';    # next / OK
 
     # Setup Directories to Export
+    apply_workaround_poo124652('nfs-server-export') if (is_sle('>=15-SP4'));
     assert_screen 'nfs-server-export';
     send_key 'alt-d';
     assert_screen 'nfs-server-export-popup';
