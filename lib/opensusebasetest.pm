@@ -906,7 +906,9 @@ sub wait_boot {
     reconnect_xen if check_var('VIRSH_VMM_FAMILY', 'xen');
 
     # on s390x svirt encryption is unlocked with workaround_type_encrypted_passphrase before here
-    unlock_if_encrypted unless get_var('S390_ZKVM');
+    if (need_passphrase_again) {
+        unlock_if_encrypted unless get_var('S390_ZKVM');
+    }
 
     $self->wait_boot_past_bootloader(%args);
     $self->{in_wait_boot} = 0;
