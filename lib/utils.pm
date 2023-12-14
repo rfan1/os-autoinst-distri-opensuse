@@ -1059,7 +1059,7 @@ without LVM configuration (cr_swap,cr_home etc).
 =cut
 
 sub need_passphrase_again {
-    my $need_passphrase_again = is_leap('<15.6') || is_sle('<15-sp6') || is_leap_micro || is_sle_micro || is_alp || (!get_var('LVM', '0') && !get_var('FULL_LVM_ENCRYPT', '0'));
+    my $need_passphrase_again = is_leap('<15.6') || is_sle('<15-sp6') || is_leap_micro || is_sle_micro || is_alp || !get_var('LVM', '0');
     return 0 if is_boot_encrypted && !$need_passphrase_again;
     return 1;
 }
