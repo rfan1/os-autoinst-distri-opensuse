@@ -1780,6 +1780,7 @@ sub reconnect_mgmt_console {
                 }
                 wait_serial('GNU GRUB', $args{grub_timeout}) ||
                   diag 'Could not find GRUB screen, continuing nevertheless, trying to boot';
+                type_string "\n";    # Refresh the page
                 type_line_svirt '', expect => $login_ready, timeout => $args{timeout}, fail_message => 'Could not find login prompt';
             }
         }
