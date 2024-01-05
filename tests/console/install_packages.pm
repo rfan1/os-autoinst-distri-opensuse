@@ -1,7 +1,7 @@
 # SUSE's openQA tests
 #
 # Copyright 2009-2013 Bernhard M. Wiedemann
-# Copyright 2012-2018 SUSE LLC
+# Copyright 2012-2024 SUSE LLC
 # SPDX-License-Identifier: FSFAP
 
 # Package: perl-solv perl-Data-Dump zypper libzypp
@@ -13,9 +13,10 @@ use strict;
 use warnings;
 use testapi;
 use utils 'zypper_call';
+use serial_terminal 'select_serial_terminal';
 
 sub run {
-    select_console 'root-console';
+    select_serial_terminal();
 
     my $packages = get_var("INSTALL_PACKAGES");
 
