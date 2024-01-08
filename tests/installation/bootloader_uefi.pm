@@ -141,7 +141,7 @@ sub run {
 
         # JeOS is never deployed with Linuxrc involved,
         # so 'regurl' does not apply there.
-        registration_bootloader_params(utils::VERY_SLOW_TYPING_SPEED) unless is_jeos;
+	# registration_bootloader_params(utils::VERY_SLOW_TYPING_SPEED) unless is_jeos;
 
         # boot
         mutex_wait 'support_server_ready' if get_var('USE_SUPPORT_SERVER');

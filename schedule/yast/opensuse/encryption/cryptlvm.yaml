@@ -13,7 +13,8 @@ schedule:
   - installation/setup_libyui
   - '{{access_beta_distribution}}'
   - installation/licensing/accept_license
-  - installation/online_repos/disable_online_repos
+  - installation/online_repos/enable_online_repos
+  - installation/setup_online_repos
   - installation/installation_mode
   - installation/logpackages
   - installation/system_role/select_role_generic_desktop
@@ -36,6 +37,10 @@ schedule:
   - installation/first_boot
   - console/validate_lvm
   - console/validate_encrypt
+  - console/force_scheduled_tasks
+  - shutdown/grub_set_bootargs
+  - shutdown/cleanup_before_shutdown
+  - shutdown/shutdown    
 test_data:
   crypttab:
     num_devices_encrypted: 1
