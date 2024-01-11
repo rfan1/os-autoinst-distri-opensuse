@@ -8,7 +8,7 @@ use Exporter;
 
 use strict;
 use warnings;
-use testapi qw(is_serial_terminal :DEFAULT);
+use testapi qw(reset_consoles is_serial_terminal :DEFAULT);
 use lockapi 'mutex_wait';
 use mm_network;
 use version_utils qw(is_alp is_sle_micro is_microos is_leap is_leap_micro is_public_cloud is_sle is_sle12_hdd_in_upgrade is_storage_ng is_jeos package_version_cmp is_transactional);
@@ -434,6 +434,8 @@ sub check_console_font {
     # for the needle to match, for migration, need wait root console
     my $flavor = get_var('FLAVOR');
     select_console('root-console', await_console => ($flavor =~ /Migration/) ? 1 : 0);
+    reset_consoles;
+    record_info('CURRENT TTY:', script_output('tty'));
 
     # if this command failed, we're not in a console (e.g. in a svirt
     # ssh connection) and don't see the console font but the local
