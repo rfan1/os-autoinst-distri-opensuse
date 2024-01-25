@@ -18,12 +18,16 @@ use warnings;
 use base 'bootbasetest';
 use testapi;
 use x11utils 'turn_off_plasma_tooltips';
+use utils 'handle_gnome_memory_ge_4g';
 
 sub run {
     shift->wait_boot_past_bootloader;
     # This only works with generic-desktop. In the opensuse-welcome case,
     # the opensuse-welcome module will handle it instead.
     turn_off_plasma_tooltips if match_has_tag('generic-desktop');
+
+    # https://progress.opensuse.org/issues/153808
+    handle_gnome_memory_ge_4g();
 }
 
 sub test_flags {
