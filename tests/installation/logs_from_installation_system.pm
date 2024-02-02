@@ -31,6 +31,12 @@ sub run {
     my ($self) = @_;
     my $dasd_path = get_var('DASD_PATH', '0.0.0150');
     select_console 'install-shell';
+    record_info "LEAP GRUB TIMEOUT";
+    my $stor_inst = "/var/log/YaST2/storage-inst/*committed.yml";
+    my $root_hd = script_output("cat $stor_inst | grep -B4 'mount_point: \"/\"' | grep name | awk -F \\\" '{print \$2}'");
+    assert_script_run("mount $root_hd /mnt");
+    assert_script_run("cat /mnt/etc/default/grub | grep -i grub_timeout");
+    assert_script_run('umount /mnt');
 
     # permit root ssh login for CC test:
     # in "Common Criteria" "System Role" system, root ssh login is disabled
