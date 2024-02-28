@@ -53,7 +53,7 @@ sub run {
     barrier_wait 'MM_SETUP_DONE';
     ping_size_check('server') unless $is_server;
     barrier_wait 'MM_SETUP_PING_CHECK_DONE';
-    wait_for_children if $is_server;
+    ## echo abc
 }
 
 1;
