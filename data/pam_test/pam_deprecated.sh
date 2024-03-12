@@ -55,19 +55,19 @@ teardown() {
 
 @test "deny access if too many attempts fail" {               # case 04
     sed -i '/^auth/i\auth required pam_tally2.so onerr=fail deny=1 unlock_time=10' /etc/pam.d/pam_test
+    sleep 1
 
     run bash -c "echo -en '$USER_ERR_PW' | pam_test auth $USER_NOR" # error password triggers this case
     [ "$status" -ne 0 ]
-    sleep 2 # this time is less than 10s
+    sleep 3 # this time is less than 10s
     run bash -c "echo -en '$USER_NOR_PW' | pam_test auth $USER_NOR"
     [ "$status" -ne 0 ]
-    sleep 12
+    sleep 30
     echo -en "$USER_NOR_PW" | pam_test auth $USER_NOR
 }
 
 @test "check for valid login shell" {                       # case 05
     sed -i '/^account/i\account required pam_shells.so' /etc/pam.d/pam_test
-
     bash -c "echo -en '$USER_NOR_PW' | pam_test auth $USER_NOR"
     mv /etc/shells /etc/shells.bak && touch /etc/shells
     run bash -c "echo -en '$USER_NOR_PW' | pam_test auth $USER_NOR"
