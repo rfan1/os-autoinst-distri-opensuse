@@ -52,6 +52,13 @@ sub run {
         my $enable_root_ssh = (is_alp || is_sle_micro('>=6.0') && is_s390x) ? 1 : 0;
         $self->wait_boot(bootloader_time => $timeout, nologin => $nologin, ready_time => $ready_time, enable_root_ssh => $enable_root_ssh);
     }
+    select_console 'root-console';
+    assert_script_run 'wget https://download.opensuse.org/repositories/GNOME:/STABLE:/45/SLE_15_SP6/x86_64/mutter-45.3-150600.7.1.x86_64.rpm';
+    assert_script_run 'rpm -Uvh --force --nodeps mutter-45.3-150600.7.1.x86_64.rpm';
+    assert_script_run 'systemctl restart display-manager';
+    wait_still_screen 10;
+    select_console 'root-console';
+
 }
 
 sub test_flags {
