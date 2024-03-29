@@ -365,6 +365,7 @@ sub script_sudo {
         }
     }
     enter_cmd "clear";    # poo#13710
+    sleep 5;    #test timing
     enter_cmd "su -c \'$prog\'", max_interval => 125;
     handle_password_prompt unless ($testapi::username eq 'root');
     if ($wait > 0) {

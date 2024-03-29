@@ -758,7 +758,6 @@ sub registration_bootloader_cmdline {
     set_var('SCC_URL', 'https://scc.suse.com') unless get_var('SCC_URL');
     my $cmdline = '';
     if (my $url = get_var('SMT_URL') || get_var('SCC_URL')) {
-        $cmdline .= " regurl=$url";
         $cmdline .= " regcert=$url" if get_var('SCC_CERT');
     }
     return $cmdline;

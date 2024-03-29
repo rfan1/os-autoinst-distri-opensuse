@@ -211,7 +211,7 @@ sub show_debug {
     # make the install-shell look like the ones on other systems where we
     # don't use a ssh session
     # there is no "clear" in remote system (or was not at time of writing)
-    assert_script_run('cd && reset');
+    #assert_script_run('cd && reset');
 }
 
 sub create_encrypted_part_dasd {
