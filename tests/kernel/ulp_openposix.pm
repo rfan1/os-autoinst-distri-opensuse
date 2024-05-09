@@ -16,7 +16,7 @@ use klp;
 use qam;
 use LTP::utils;
 use OpenQA::Test::RunArgs;
-
+use registration qw(add_suseconnect_product get_addon_fullname);
 sub parse_incident_repo {
     my $incident_id = get_required_var('INCIDENT_ID');
     my $repo = get_required_var('INCIDENT_REPO');
@@ -95,7 +95,7 @@ sub run {
     my ($self, $tinfo) = @_;
 
     select_serial_terminal;
-
+    add_suseconnect_product(get_addon_fullname('ltss'), undef, undef, "-r " . get_required_var('SCC_REGCODE_LTSS'), 300, 1);
     if (!defined($tinfo)) {
         # First test round in the job, prepare environment
         $tinfo = setup_ulp();
