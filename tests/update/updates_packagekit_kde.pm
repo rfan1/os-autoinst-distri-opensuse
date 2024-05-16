@@ -85,7 +85,11 @@ sub run {
             }
         }
         # Close tray updater
+        mouse_set(600, 600);
+        mouse_click;
+        mouse_hide(1);
         send_key("alt-f4");
+        # Mouse click to close in case "alt-f4" doesn't work sometimes
     }
 
     if (check_screen "updates_installed-restart") {

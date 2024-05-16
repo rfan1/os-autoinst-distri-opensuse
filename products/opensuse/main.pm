@@ -243,6 +243,9 @@ sub load_slenkins_tests {
 sub prepare_target {
     if (get_var("BOOT_HDD_IMAGE")) {
         boot_hdd_image;
+        if (is_opensuse && get_var("UPGRADE") && get_var("FULL_UPDATE")) {
+            load_patch_before_migration_tests;
+        }
     }
     else {
         load_boot_tests();

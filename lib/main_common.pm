@@ -98,6 +98,7 @@ our @EXPORT = qw(
   load_x11tests
   load_hypervisor_tests
   load_yast2_gui_tests
+  load_patch_before_migration_tests
   load_zdup_tests
   logcurrentenv
   map_incidents_to_repo
@@ -475,7 +476,33 @@ sub load_autoyast_clone_tests {
     loadtest "console/consoletest_finish";
 }
 
+sub load_patch_before_migration_tests {
+    # Patch the system before upgrade
+    loadtest 'migration/patch_and_reboot_system';
+    loadtest 'migration/reboot_to_upgrade';
+    }
+
+sub boot_hdd_image {
+    # On JeOS we don't need to load any test to boot, but to keep main.pm sane just return.
+    is_jeos() ? return 1 : get_required_var('BOOT_HDD_IMAGE');
+    if (is_svirt) {
+        if (check_var('VIRSH_VMM_FAMILY', 'hyperv')) {
+            loadtest 'installation/bootloader_hyperv';
+        }
+        else {
+            loadtest 'installation/bootloader_svirt' unless load_bootloader_s390x;
+        }
+    }
+    loadtest 'installation/bootloader' if is_pvm;
+    loadtest 'boot/boot_to_desktop';
+}
+
 sub load_zdup_tests {
+    if (is_opensuse && get_var("FULL_UPDATE")) {
+        loadtest 'installation/bootloader_start';
+        loadtest 'boot/boot_to_desktop';
+        load_patch_before_migration_tests;
+    }
     loadtest 'installation/setup_zdup';
     if (get_var("LOCK_PACKAGE")) {
         loadtest "console/lock_package";
@@ -863,21 +890,6 @@ sub load_bootloader_s390x {
         loadtest "installation/bootloader_zkvm";
     }
     return 1;
-}
-
-sub boot_hdd_image {
-    # On JeOS we don't need to load any test to boot, but to keep main.pm sane just return.
-    is_jeos() ? return 1 : get_required_var('BOOT_HDD_IMAGE');
-    if (is_svirt) {
-        if (check_var('VIRSH_VMM_FAMILY', 'hyperv')) {
-            loadtest 'installation/bootloader_hyperv';
-        }
-        else {
-            loadtest 'installation/bootloader_svirt' unless load_bootloader_s390x;
-        }
-    }
-    loadtest 'installation/bootloader' if is_pvm;
-    loadtest 'boot/boot_to_desktop';
 }
 
 sub load_common_installation_steps_tests {
