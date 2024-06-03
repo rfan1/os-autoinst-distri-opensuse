@@ -18,6 +18,9 @@ use autoyast qw(
 sub run {
     my $ay_path = get_required_var('AUTOYAST');
 
+    # In case profile is uploaded as an ASSET we need just filename
+    return if ($ay_path =~ /^ASSET_\d+$/);
+
     # get file from data directory and guess path if needed
     my $profile = get_test_data($ay_path);
     $ay_path = detect_profile_directory(profile => $profile, path => $ay_path);

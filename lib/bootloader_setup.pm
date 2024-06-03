@@ -18,6 +18,7 @@ use utils;
 use version_utils qw(is_opensuse is_microos is_sle_micro is_jeos is_leap is_sle is_selfinstall is_transactional);
 use mm_network;
 use Utils::Backends;
+use autoyast qw(detect_profile_directory prepare_ay_file);
 
 use backend::svirt qw(SERIAL_TERMINAL_DEFAULT_DEVICE SERIAL_TERMINAL_DEFAULT_PORT SERIAL_CONSOLE_DEFAULT_DEVICE SERIAL_CONSOLE_DEFAULT_PORT SERIAL_USER_TERMINAL_DEFAULT_DEVICE SERIAL_USER_TERMINAL_DEFAULT_PORT);
 
@@ -790,6 +791,14 @@ sub autoyast_boot_params {
     }
     elsif ($ay_var =~ /^ASSET_\d+$/) {
         # In case profile is uploaded as an ASSET we need just filename
+        # get file from data directory and guess path if needed
+        my $ay_path = get_var($ay_var);
+        my $profile = get_test_data($ay_path);
+        $ay_path = detect_profile_directory(profile => $profile, path => $ay_path);
+
+        # expand/map variables in the xml file processed
+        # AutoYaST path is updated in case of using templates
+        $ay_var = prepare_ay_file($ay_path);
         $ay_var = basename(get_required_var($ay_var));
         $autoyast_args .= autoinst_url("/assets/other/$ay_var");
     }
