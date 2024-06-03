@@ -419,7 +419,7 @@
       </password_settings>
       <shell>/bin/bash</shell>
       <uid>0</uid>
-      <user_password>$6$gdDHoMtVLjs4CCzf$2tSvAdgvqrKo84pA59bEjZRh7IGMfv4u0Yl4hrRzPgFPWLd8RXWdn/boT7yM3K3BlTk57qyR0TZ/nMb9rlpzx1</user_password>
+      <user_password><% $testapi::passwprd %></user_password>
       <username>root</username>
     </user>
   </users>
