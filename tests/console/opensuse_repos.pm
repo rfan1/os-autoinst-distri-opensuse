@@ -24,7 +24,6 @@ use serial_terminal 'select_serial_terminal';
 sub run {
     my $pkgname = 'openSUSE-repos-Tumbleweed';
     select_serial_terminal;
-
     zypper_call "in openSUSE-repos";
 
     $pkgname = 'openSUSE-repos-Leap' if is_leap;
@@ -36,7 +35,8 @@ sub run {
 
     # NVIDIA repo is available only for x86_64 and aarch64
     if (is_x86_64 || is_aarch64) {
-        zypper_call "in openSUSE-repos-NVIDIA";
+        # poo#161798
+        zypper_call "--gpg-auto-import-keys in openSUSE-repos-NVIDIA";
         assert_script_run("rpm -q $pkgname-NVIDIA");
     }
 
