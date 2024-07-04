@@ -103,6 +103,7 @@ sub run {
         }
 
         if (match_has_tag("updates_none")) {
+            wait_still_screen 10;
             send_key 'ret';
             close_pop_up_windows;
             return;
@@ -130,7 +131,9 @@ sub run {
                 }
             } while (match_has_tag 'Policykit');
             if (match_has_tag("updates_none")) {
+                wait_still_screen 10;
                 wait_screen_change { send_key 'ret'; };
+                close_pop_up_windows;
                 if (check_screen "updates_installed-restart", 0) {
                     power_action 'reboot', textmode => 1;
                     $self->wait_boot;
