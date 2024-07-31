@@ -11,6 +11,7 @@ use testapi;
 use utils;
 use transactional;
 use Utils::Architectures qw(is_s390x);
+use version_utils qw(is_vmware);
 
 my (%network_s390x, %network_qemu, %net_config, $nic_name);
 
@@ -18,7 +19,7 @@ sub ping_check {
     assert_script_run("ping -c 5 $net_config{'dhcp_server'}");
     assert_script_run("ping -c 5 $net_config{'dns_server'}");
     # disconnect the device, skip the test on remote worker with ssh connection
-    unless (is_s390x) {
+    unless (is_vmware) {
         assert_script_run("nmcli device disconnect $nic_name");
         if (script_run("ping -c 5 $net_config{'dns_server'}") == 0) {
             die('The network is still up after disconnection');
@@ -65,7 +66,7 @@ sub run {
         'mac_addr' => get_var('NICMAC'),
         'local_ip' => '10.0.2.15'
     );
-    %net_config = is_s390x ? %network_s390x : %network_qemu;
+    %net_config = is_vmware ? %network_s390x : %network_qemu;
     $nic_name = script_output("grep $net_config{'mac_addr'} /sys/class/net/*/address |cut -d / -f 5");
 
     # make sure 'sysconfig' and 'sysconfig-netconfig' are not installed by default
