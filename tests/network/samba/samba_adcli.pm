@@ -15,7 +15,7 @@ use base "consoletest";
 use testapi;
 use serial_terminal 'select_serial_terminal';
 use utils;
-use version_utils 'is_sle';
+use version_utils qw(is_sle is_leap);
 use Utils::Architectures;
 
 ## Fail fast when required variables are not present
@@ -38,6 +38,10 @@ sub get_supportserver_file {
 
 sub samba_sssd_install {
     zypper_call('in expect samba adcli samba-winbind krb5-client sssd-ad');
+    zypper_call('ar -f http://download.suse.de/ibs/home:/npower:/branches:/SUSE:/SLE-15-SP6:/Update/standard/home:npower:branches:SUSE:SLE-15-SP6:Update.repo');
+    zypper_call("--gpg-auto-import-keys ref");
+    zypper_call('-n up samba');
+    zypper_call('-n install --allow-vendor-change --force-resolution --force --replacefiles samba-4.19.7+git.357.1d7950ebd62-150600.2.3.1.x86_64');
 
     # sssd versions prior to 1.14 don't support conf.d
     # https://github.com/SSSD/sssd/issues/3289
@@ -45,6 +49,7 @@ sub samba_sssd_install {
     my $sssd_config_location = "/etc/sssd/conf.d/suse.conf";
     $sssd_config_location = "/etc/sssd/sssd.conf" if is_sle('<=12-sp4');
 
+    script_run("if [ ! -d '/etc/sssd/conf.d' ]; then mkdir -p /etc/sssd/conf.d ; fi");
     # Copy config files enviroment.
     get_supportserver_file("kinit.exp", '$HOME/kinit.exp');
     get_supportserver_file("smb.conf", "/etc/samba/smb.conf");

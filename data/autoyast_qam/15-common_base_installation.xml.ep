@@ -101,6 +101,7 @@
           <create t="boolean">true</create>
           <filesystem t="symbol">ext2</filesystem>
           <format t="boolean">true</format>
+          <fstopt>acl,user_xattr</fstopt>
           <mount>/boot/zipl</mount>
           <mountby t="symbol">uuid</mountby>
           <partition_id t="integer">131</partition_id>
