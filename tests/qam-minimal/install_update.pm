@@ -45,7 +45,11 @@ sub run {
     }
     # do zypper update bsc#1165180
     fully_patch_system;
-
+    # bsc#1216381
+    zypper_call("ar -f http://download.suse.de/ibs/home:/tsaupe:/branches:/SUSE:/SLE-15-SP5:/Update:/systemd-bsc1216381/standard/ repo_systemd-bsc1216381");
+    zypper_call("--gpg-auto-import-keys ref");
+    record_info 'install new debug pkg';
+    zypper_call("-n install --allow-vendor-change --force systemd-249.17-150400.8.43.5.x86_64 udev-249.17-150400.8.43.5.x86_64");
     # DESKTOP can be gnome, but patch is happening in shell, thus always force reboot in shell
     power_action('reboot', textmode => 1);
     $self->wait_boot(bootloader_time => get_var('BOOTLOADER_TIMEOUT', 200));
