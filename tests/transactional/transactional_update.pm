@@ -126,4 +126,8 @@ sub test_flags {
     return {no_rollback => 1};
 }
 
+sub post_fail_hook {
+    upload_logs "/var/log/zypper.log";
+}
+
 1;
