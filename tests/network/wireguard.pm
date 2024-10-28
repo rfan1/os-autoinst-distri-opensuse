@@ -68,13 +68,14 @@ sub run {
         zypper_call '--gpg-auto-import-keys ref';
         zypper_call 'in kernel-default-extra';
         assert_script_run 'modprobe wireguard';
+        assert_script_run("echo NETWORKMANAGER_DNS_FORWARDER='dnsmasq' >> /etc/sysconfig/network/config")
     }
 
     my $boot_config = '/boot/config-$(uname -r)';
     assert_script_run("grep -i CONFIG_WIREGUARD $boot_config") unless (script_run("stat $boot_config") != 0);
     assert_script_run 'modinfo wireguard';
 
-    zypper_call 'in wireguard-tools iperf';
+    zypper_call('in wireguard-tools iperf', exitcode => [0, 106]);
 
     assert_script_run 'which wg';
     assert_script_run 'umask 077';
@@ -131,27 +132,41 @@ sub run {
         script_run('echo "Waiting for clients ... "');
         barrier_wait('WG_QUICK_ENABLED');
         script_retry("ping -c10 $vpn_remote", delay => 3, retry => 10);
+        select_console 'root-console';
     } else {
         script_run('echo "Waiting for server ... "');
         barrier_wait('WG_QUICK_READY');
         # client2
-        assert_script_run('echo -e "[Interface]\nPrivateKey = `cat /etc/wireguard/client2`\nAddress = 192.168.2.3\n" > /etc/wireguard/wg2.conf');
-        assert_script_run('echo -e "[Peer]\nPublicKey = `cat /etc/wireguard/server.pub`\nEndpoint=' . "$remote:51820\n" . '\nAllowedIPs = 192.168.2.0/24" >> /etc/wireguard/wg2.conf');
+        script_run('echo -e "[Interface]\nPrivateKey = `cat /etc/wireguard/client2`\nAddress = 192.168.2.3\n" > /etc/wireguard/wg2.conf');
+        #script_run('echo -e "[Peer]\nPublicKey = `cat /etc/wireguard/server.pub`\nEndpoint=' . "$remote:51820\n" . '\nAllowedIPs = 192.168.2.0/24" >> /etc/wireguard/wg2.conf');
+        assert_script_run('echo -e "[Peer]\nPublicKey = `cat /etc/wireguard/server.pub`\nEndpoint=' . "$remote:51820" . '\nAllowedIPs = 192.168.2.0/24" >> /etc/wireguard/wg2.conf');
         script_run('cat /etc/wireguard/wg2.conf');
         start_wgquick("wg2");
         script_retry("ping -c10 $vpn_remote", delay => 3, retry => 10);
         assert_script_run('systemctl stop wg-quick@wg2');
         # client1 - the server expects client1 to be online after WG_QUICK_ENABLED
-        assert_script_run('echo -e "[Interface]\nPrivateKey = `cat /etc/wireguard/client1`\nAddress = 192.168.2.2\n" > /etc/wireguard/wg1.conf');
-        assert_script_run('echo -e "[Peer]\nPublicKey = `cat /etc/wireguard/server.pub`\nEndpoint=' . "$remote:51820\n" . '\nAllowedIPs = 192.168.2.0/24" >> /etc/wireguard/wg1.conf');
+        script_run('echo -e "[Interface]\nPrivateKey = `cat /etc/wireguard/client1`\nAddress = 192.168.2.2\n" > /etc/wireguard/wg1.conf');
+        #script_run('echo -e "[Peer]\nPublicKey = `cat /etc/wireguard/server.pub`\nEndpoint=' . "$remote:51820\n" . '\nAllowedIPs = 192.168.2.0/24" >> /etc/wireguard/wg1.conf');
+        assert_script_run('echo -e "[Peer]\nPublicKey = `cat /etc/wireguard/server.pub`\nEndpoint=' . "$remote:51820" . '\nAllowedIPs = 192.168.2.0/24" >> /etc/wireguard/wg1.conf');
         script_run('cat /etc/wireguard/wg1.conf');
         start_wgquick("wg1");
         barrier_wait('WG_QUICK_ENABLED');
         script_retry("ping -c10 $vpn_remote", delay => 3, retry => 10);
+        select_console 'root-console';
     }
     # Finish job
     wait_for_children if (get_var('IS_MM_SERVER'));
 
+}
+
+sub post_fail_hook {
+    my ($self) = shift;
+    select_console 'root-console';
+    upload_logs('/var/log/audit/audit.log');
+    script_run('journalctl > /tmp/logs_jour.txt');
+    upload_logs('/tmp/logs_jour.txt');
+    $self->SUPER::post_fail_hook;
+    upload_logs('/etc/hosts');
 }
 
 1;
