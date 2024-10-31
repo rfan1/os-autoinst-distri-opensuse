@@ -143,7 +143,11 @@ sub ensure_unlocked_desktop {
         }
         if ((match_has_tag 'displaymanager-password-prompt') || (match_has_tag 'screenlock-password')) {
             if ($password ne '') {
+                save_screenshot();
+                wait_still_screen 100;
                 type_password;
+                wait_still_screen 100;
+                save_screenshot();
                 # poo#97556
                 if (check_var('DESKTOP', 'minimalx')) {
                     send_key 'ret';
