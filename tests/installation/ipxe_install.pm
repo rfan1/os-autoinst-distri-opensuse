@@ -70,13 +70,17 @@ sub set_bootscript {
     my $arch = get_required_var('ARCH');
     my $autoyast = get_var('AUTOYAST', '');
     my $mirror_http = get_required_var('MIRROR_HTTP');
+    my $openqa_url = get_var('OPENQA_URL', 'openqa.suse.de');
+    my $agama_installer = get_var('ISO');
 
     # trim all strings from variables to get rid of bogus whitespaces
     $arch =~ s/^\s+|\s+$//g;
     $autoyast =~ s/^\s+|\s+$//g;
     $mirror_http =~ s/^\s+|\s+$//g;
+    $openqa_url =~ s/^\s+|\s+$//g;
+    $agama_installer =~ s/^\s+|\s+$//g;
 
-    my $install = "install=$mirror_http";
+    my $install = is_sle('>=16') ? "root=live:http://$openqa_url/assets/iso/$agama_installer live.password=$testapi::password" : "install=$mirror_http";
     my $kernel = $mirror_http;
     my $initrd = $mirror_http;
 
@@ -85,7 +89,7 @@ sub set_bootscript {
         $install .= get_var('HDD_1') ? get_var('HDD_1') : get_required_var('INSTALL_HDD_IMAGE');
         $kernel .= "/pxeboot.$distri.$arch-$version.kernel";
         $initrd .= "/pxeboot.$distri.$arch-$version.initrd";
-    } elsif ($arch eq 'aarch64') {
+     } elsif (($arch eq 'aarch64') && !is_sle('>=16')) {
         $kernel .= '/boot/aarch64/linux';
         $initrd .= '/boot/aarch64/initrd';
     } else {
@@ -148,8 +152,20 @@ sub enter_o3_ipxe_boot_entry {
 }
 
 sub set_bootscript_cmdline_extra {
-
     my $cmdline_extra = " ";
+    if (is_sle('>=16')) {
+        if (get_var('AGAMA_AUTO')) {
+            my $agama_auto = data_url(get_var('AGAMA_AUTO'));
+            $agama_auto =~ s/^\s+|\s+$//g;
+            $cmdline_extra .= "agama.auto=$agama_auto ";
+        }
+        if (get_var('AGAMA_INSTALL_URL')) {
+            my $agama_install_url = get_var('AGAMA_INSTALL_URL');
+            $cmdline_extra .= "agma.auto=$agama_install_url ";
+        }
+        $cmdline_extra .= "console=ttyS1,115200 " if is_ipmi;
+        return $cmdline_extra;
+    }
     my $regurl = get_var('VIRT_AUTOTEST') ? get_var('HOST_SCC_URL', '') : get_var('SCC_URL', '');
     my $console = get_var('IPXE_CONSOLE', '');
     my $autoyast = get_var('AUTOYAST', '');
@@ -214,7 +230,6 @@ sub set_bootscript_cmdline_extra {
     $cmdline_extra .= " reboot_timeout=" . get_var('REBOOT_TIMEOUT', 0) . ' '
       unless (is_leap('<15.2') || is_sle('<15-SP2'));
     $cmdline_extra .= get_var('EXTRABOOTPARAMS', '');
-
     return $cmdline_extra;
 }
 
@@ -284,6 +299,12 @@ sub run {
     poweron_host;
 
     select_console 'sol', await_console => 0;
+
+    if (is_sle('>=16')) {
+        record_info('Start agama installation');
+        assert_screen('agama-installer-live-root', 400);
+        return;
+    }
 
     if (is_disk_image) {
         check_screen([qw(load-linux-kernel load-initrd)], 120 / get_var('TIMEOUT_SCALE', 1));
