@@ -100,7 +100,7 @@ sub run {
         script_run('agama logs store -d /tmp');
         upload_logs('/tmp/agama-logs.tar.gz');
         record_info 'Prepare system before rebooting';
-        agama_system_prepare();
+	#agama_system_prepare();
         record_info 'Reboot system to disk boot';
         enter_cmd 'reboot';
         # Swith back to sol console, then user can monitor the boot log
