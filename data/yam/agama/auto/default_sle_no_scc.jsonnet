@@ -20,6 +20,11 @@
         "body": |||
           #!/usr/bin/env bash
           zypper rm openssh-server-config-rootlogin
+          echo 'PermitRootLogin yes' > /etc/ssh/sshd_config.d/root.conf
+          sed -i 's/GRUB_TIMEOUT.*$/GRUB_TIMEOUT=-1/' /etc/default/grub
+          for i in `sed -n '/set timeout=/=' /boot/grub2/grub.cfg |sed 1d`
+              do sed -i "$i"'s/set timeout=.$/set timeout=-1/' /boot/grub2/grub.cfg
+          done
         |||
       }
     ]
