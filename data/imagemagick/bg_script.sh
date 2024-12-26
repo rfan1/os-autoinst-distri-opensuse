@@ -889,7 +889,7 @@ convert -size 60x60 pattern:checkerboard -auto-level  +level-colors red,blue    
 cme pattern_color_checks.gif 217.gif
 
 echo "pattern_color_hexagons.gif"
-convert -size 30x54 pattern:hexagons  -fill tomato     -opaque white  -fill dodgerblue -draw 'color 10,10 floodfill'  -fill limegreen  -draw 'color 10,25 floodfill'  -roll +15+27  -fill dodgerblue -draw 'color 10,10 floodfill'  -fill limegreen  -draw 'color 10,25 floodfill'   miff:- | convert -size 100x100 tile:- pattern_color_hexagons.gif
+magick -size 30x54 pattern:hexagons  -fill tomato     -opaque white  -fill dodgerblue -draw 'color 10,10 floodfill'  -fill limegreen  -draw 'color 10,25 floodfill'  -roll +15+27  -fill dodgerblue -draw 'color 10,10 floodfill'  -fill limegreen  -draw 'color 10,25 floodfill'   miff:- | convert -size 100x100 tile:- pattern_color_hexagons.gif
 cme pattern_color_hexagons.gif 218.gif
 
 echo "pattern_distorted.gif"
