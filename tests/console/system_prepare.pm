@@ -28,6 +28,7 @@ use Utils::Architectures 'is_ppc64le';
 use warnings;
 use virt_autotest::hyperv_utils 'hyperv_cmd';
 use transactional qw(process_reboot);
+use power_action_utils 'power_action';
 
 sub run {
     my ($self) = @_;
@@ -121,6 +122,14 @@ sub run {
 
     # stop and disable PackageKit
     quit_packagekit;
+    ########
+    zypper_call('in suseconnect-ng');
+    record_info "agama pscc register";
+    my $regcode = get_var('SCC_REGCODE');
+    my $regurl = get_var('SCC_URL');
+    assert_script_run("suseconnect -r $regcode --url $regurl");
+    ########
+
 }
 
 sub test_flags {
