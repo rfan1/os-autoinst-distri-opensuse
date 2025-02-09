@@ -110,7 +110,7 @@ sub run {
     # Configure IPsec tunnel to use self-signed certificates
     assert_script_run("cp host_1-cert.pem $dir_certs");
     assert_script_run("cp host_1-privkey.pem $dir_private");
-    assert_script_run("ovs-vsctl set Open_vSwitch . other_config:certificate=/etc/keys/host_1-cert.pem other_config:private_key=/etc/keys/host_1-privkey.pem");
+    assert_script_run("ovs-vsctl set Open_vSwitch . other_config:certificate=/etc/keys/host_1-cert.pem other_config:private_key=$dir_private/host_1-privkey.pem");
     assert_script_run("ovs-vsctl add-port br-ipsec tun -- set interface tun type=gre options:remote_ip=$client_ip options:remote_cert=/etc/keys/host_2-cert.pem");
     systemctl 'restart openvswitch-ipsec';
     systemctl 'status openvswitch-ipsec';
