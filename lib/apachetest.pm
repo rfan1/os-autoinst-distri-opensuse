@@ -48,8 +48,13 @@ sub setup_apache2 {
         $mode = "NSSFIPS";
     }
     if ($mode =~ m/NSS/) {
-        my $apache2_mod_pkg = (is_sle('>=16') || is_leap('>=16.0')) ? "apache2-mod_ssl" : "apache2-mod_nss";	    
-        push @packages, qw($apache2_mod_pkg mozilla-nss-tools expect);
+        push @packages, qw(mozilla-nss-tools expect);
+        if (is_sle('>=16') || is_leap('>=16.0')) {
+            push @packages, qw(apache2-mod_ssl);
+        }
+        else {
+            push @packages, qw(apache2-mod_nss);
+        }
     }
 
     if ($mode eq "PHP5") {
