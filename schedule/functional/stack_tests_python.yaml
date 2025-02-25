@@ -26,6 +26,19 @@ conditional_schedule:
         - console/rabbitmq
   version_specific:
     VERSION:
+      '16.0':
+        - console/python3_new_version_check
+        - console/python3_setuptools
+        - console/python3_pipx
+        - console/python_virtualenv
+        - console/python3_beautifulsoup4
+        - console/python3_pynacl
+        - console/python3_websocket_client
+        - console/python_flake8
+        - console/python_pycairo
+        - console/django
+        - '{{python_liblouis}}'
+        - console/rabbitmq
       15-SP7:
         - console/python3_new_version_check
         - console/python3_setuptools

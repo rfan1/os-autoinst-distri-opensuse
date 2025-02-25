@@ -34,7 +34,7 @@ sub run {
         if ((package_version_cmp($python3_spec_release, "3.6") < 0) ||
             (package_version_cmp($python3_spec_release, "3.7") >= 0)) {
             # Factory default Python3 version for SLE15-SP4+ should be 3.6
-            die("Python default version differs from 3.6");
+            die("Python default version differs from 3.6") if is_sle('<16');
         }
     }
     record_info("Testing system python version $python3_spec_release", "python $python3_spec_release is tested now");
