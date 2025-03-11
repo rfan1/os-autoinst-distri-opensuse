@@ -19,9 +19,9 @@ use registration qw(add_suseconnect_product get_addon_fullname);
 sub run {
     select_serial_terminal;
 
-    add_suseconnect_product(get_addon_fullname('pcm'), (is_sle('<15') ? '12' : undef)) if is_sle;
+    add_suseconnect_product(get_addon_fullname('pcm'), (is_sle('<15') ? '12' : undef)) if is_sle('<16');
 
-    zypper_call "in python3-Flask";
+    zypper_call "in python3-Flask python3-packaging";
 
     assert_script_run "cd ~$username/data/";
 
