@@ -15,6 +15,7 @@ use strict;
 use warnings;
 use testapi;
 use utils;
+use version_utils qw(is_sle);
 
 sub run {
     select_console 'root-console';
@@ -42,6 +43,17 @@ EOF
         script_run("systemctl status --no-pager rabbitmq-server | tee /dev/$serialdev");
         script_run("rpm -q --changelog rabbitmq-server | head -n 60 | tee /dev/$serialdev");
         systemctl 'stop rabbitmq-server', timeout => 300;
+    }
+    # poo#166541, test rabbitmq-server 3.11+ and erlang 25+ on sle15sp6+
+    if (is_sle('>=15-SP6') && is_sle('<16.0')) {
+        zypper_call 'rm rabbitmq-server erlang';
+        zypper_call 'in rabbitmq-server31*';
+        systemctl 'start rabbitmq-server';
+        systemctl 'status rabbitmq-server';
+        enter_cmd 'python3 send.py';
+        enter_cmd("timeout 1 python3 receive.py > /dev/$serialdev");
+        wait_serial(".*Received.*Hello World.*");
+        systemctl 'stop rabbitmq-server';
     }
 }
 
