@@ -443,6 +443,7 @@
 cd /etc/zypp/repos.d
 sed -i 's/enabled=1/enabled=0/' $(ls|grep -i nvidia)
 zypper lr
+sleep 30
 exit 0
 
 ]]></source>
