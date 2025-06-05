@@ -11,7 +11,7 @@
 
 use strict;
 use warnings;
-use base 'bootbasetest';
+use base 'consoletest';
 use testapi;
 use Utils::Backends 'is_qemu';
 
@@ -28,7 +28,7 @@ sub qemu_backend_ifup_check {
 
 sub run {
     select_console 'root-console';
-    qemu_backend_ifup_check();	
+    qemu_backend_ifup_check();
 }
 
 sub test_flags {
