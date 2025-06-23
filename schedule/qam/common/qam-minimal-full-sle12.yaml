@@ -37,6 +37,7 @@ schedule:
 - qam-minimal/check_logs
 - '{{s390tools}}'
 - qam-minimal/install_patterns
+- '{{yast2_vnc}}'
 - locale/keymap_or_locale
 - console/force_scheduled_tasks
 - console/textinfo
@@ -86,6 +87,10 @@ conditional_schedule:
     ARCH:
       s390x:
         - qam-minimal/s390tools
+  yast2_vnc:
+    ARCH:
+      s390x:
+        - console/yast2_vnc
   yast2_lan:
     BACKEND:
       qemu:

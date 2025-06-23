@@ -63,8 +63,9 @@ sub run {
     script_run('sed -i -r "s/^DISPLAYMANAGER_AUTOLOGIN/#DISPLAYMANAGER_AUTOLOGIN/" /etc/sysconfig/displaymanager');
     script_run('sed -i -r "s/^DEFAULT_WM=\"icewm\"/DEFAULT_VM=\"\"/" /etc/sysconfig/windowmanager');
     # now we have gnome installed - restore DESKTOP variable
-    set_var('DESKTOP', 'gnome', reload_needles => 1);
+    set_var('DESKTOP', 'gnome', reload_needles => 1) unless (is_s390x && is_sle('<15'));
 
+    systemctl 'disable SuSEfirewall2' if (is_s390x && is_sle('<15'));
     $patch = $patch ? $patch : $patches;
     my $patch_status = is_patch_needed($patch, 1);
     install_packages($patch_status) if $patch_status;
