@@ -20,13 +20,9 @@ sub run {
     my $reboot_page = $testapi::distri->get_reboot();
     $reboot_page->expect_is_shown();
 
-    $self->upload_agama_logs() unless is_hyperv();
+    #$self->upload_agama_logs() unless is_hyperv();
 
-    (is_s390x() || is_ppc64le() || is_vmware()) ?
-      # reboot via console
-      power_action('reboot', keepconsole => 1, first_reboot => 1) :
-      # graphical reboot
-      $reboot_page->reboot();
+    assert_and_click('agama-install-finished');
 }
 
 1;
