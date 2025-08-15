@@ -71,7 +71,6 @@ configuration file generated after discovery.
 =cut
 
 sub run {
-    return record_info('Skip iscsi_client_setup', 'Module skipped on older versions of SLES. Use ha/iscsi_client instead') if (is_sle('<16'));
     my $iscsi_server = get_var('USE_SUPPORT_SERVER') ? 'ns' : get_required_var('ISCSI_SERVER');
 
     select_serial_terminal;
