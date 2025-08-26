@@ -7,8 +7,6 @@ schedule:
     - installation/agama_reboot
     - installation/first_boot
     - console/system_prepare
-    - qam-minimal/install_update
-    - qam-minimal/update_minimal
     - console/hostname
     - console/force_scheduled_tasks
     - shutdown/grub_set_bootargs
