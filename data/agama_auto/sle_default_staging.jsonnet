@@ -1,7 +1,12 @@
 {
   product: {
     id: '{{AGAMA_PRODUCT_ID}}',
-    registrationCode: '{{SCC_REGCODE}}'
+    registrationCode: '{{SCC_REGCODE}}',
+    addons: [
+      {
+        id: 'PackageHub',
+      }
+    ]
   },
   bootloader: {
     stopOnBootMenu: true,
@@ -22,11 +27,19 @@
       {
         alias: 'TEST_0',
         url: '{{INCIDENT_REPO}}',
-        allowUnsigned: true,
-        gpgFingerprints: ['DC7F 1844 0F99 7A9D D7FB  DD92 0C71 EF49 FDC4 723E']
+        allowUnsigned: true
       }
     ],
     onlyRequired: false
+  },
+  questions: {
+    policy: 'auto',
+    answers: [
+      {
+        answer: 'Trust',
+        class: 'software.import_gpg'
+      }
+    ]
   },
   scripts: {
     post: [
