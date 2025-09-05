@@ -356,7 +356,7 @@ sub power_action {
             select_console 'root-console';
             systemctl 'poweroff';
         }
-
+        reconnect_mgmt_console if (is_pvm && ($action eq 'poweroff'));
         assert_shutdown_with_soft_timeout($soft_fail_data) if ($action eq 'poweroff');
         # We should only reset consoles if the system really rebooted.
         # Otherwise the next select_console will check for a login prompt
