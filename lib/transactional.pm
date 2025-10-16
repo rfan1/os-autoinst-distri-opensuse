@@ -127,6 +127,7 @@ sub process_reboot {
         assert_screen 'linux-login', 200;
 
         # Login & clear login needle
+        sleep 8 if check_var('FLAVOR', 'Base-ppc-4096');
         select_console 'root-console';
         record_kernel_audit_messages();
         assert_script_run 'clear';
