@@ -1,5 +1,6 @@
 local repo = '{{INCIDENT_REPO}}';
 local urls = std.split(repo, ',');
+local extra_patterns = '{{PATTERNS}}';
 {
   product: {
     id: '{{AGAMA_PRODUCT_ID}}',
@@ -25,6 +26,9 @@ local urls = std.split(repo, ',');
   },
   software: {
     packages: [],
+    patterns: {
+      add: std.split(extra_patterns, ',')
+    },
     extraRepositories:
       if repo != '' then
         [

@@ -715,8 +715,9 @@ sub expand_variables {
       AGAMA_PRODUCT_ID OSDISK SUT_NETDEVICE
       REPO_SLE_MODULE_DEVELOPMENT_TOOLS SCC_REGCODE_LIVE MIRROR_HTTP);
     if (is_agama && get_var('STAGING', '')) {
-        record_info 'Add extra repo for staging incident';
+        record_info 'Add extra repo or patterns for staging incident';
         push @vars, 'INCIDENT_REPO';
+        push @vars, 'PATTERNS' if check_var('DESKTOP', 'gnome');
     }
     # Push more variables to expand from the job setting
     my @extra_vars = push @vars, split(/,/, get_var('AY_EXPAND_VARS', ''));
