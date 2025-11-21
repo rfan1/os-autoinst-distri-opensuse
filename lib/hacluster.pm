@@ -25,6 +25,7 @@ use Carp qw(croak);
 use Data::Dumper;
 use XML::Simple;
 use serial_terminal qw(select_serial_terminal set_serial_prompt serial_term_prompt);
+use Utils::Backends 'is_pvm';
 
 our @EXPORT = qw(
   $crm_mon_cmd
@@ -1616,10 +1617,17 @@ asserting anything on the screen, clear it, and then select it normally.
 =cut
 
 sub prepare_console_for_fencing {
-    select_console 'root-console', await_console => 0;
+    if (is_pvm) {
+        record_info 'TEAM-10830';
+        reset_consoles;
+        select_console 'root-console';
+    }
+    else {
+        select_console 'root-console', await_console => 0;
+    }
     send_key 'ctrl-l';
     send_key 'ret';
-    select_console 'root-console';
+    select_console 'root-console' unless is_pvm;
 }
 
 =head2 crm_get_failcount
