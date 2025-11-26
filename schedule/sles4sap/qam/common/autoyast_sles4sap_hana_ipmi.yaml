@@ -1,0 +1,19 @@
+---
+name: qam_sles4sap_online_dvd_gnome_hana_ay
+description: >
+  HANA tests for SLES4SAP with the hdblcm cli
+vars:
+  INSTANCE_ID: '00'
+  INSTANCE_SID: NDB
+schedule:
+  - autoyast/prepare_profile
+  - boot/boot_from_pxe
+  - autoyast/installation
+  - installation/first_boot
+  - console/system_prepare
+  - sles4sap/patterns
+  - sles4sap/reclaim_free_space_in_pv
+  - console/ndctl
+  - sles4sap/hana_install
+  - sles4sap/hana_test
+  - sles4sap/forkbomb

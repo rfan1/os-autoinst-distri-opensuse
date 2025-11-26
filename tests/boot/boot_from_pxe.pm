@@ -143,12 +143,12 @@ sub run {
     $is_nvdimm ? type_string_very_slow ${image_path} . " " : type_string_slow ${image_path} . " ";
     bootmenu_default_params(pxe => 1, baud_rate => '115200');
 
-    if (is_ipmi && !get_var('AUTOYAST')) {
+    if (is_ipmi) {
         if (check_var('VIDEOMODE', 'text')) {
             $cmdline .= 'ssh=1 ';    # trigger ssh-text installation
         }
         else {
-            $cmdline .= "sshd=1 vnc=1 VNCPassword=$testapi::password ";    # trigger default VNC installation
+            $cmdline .= "sshd=1 vnc=1 VNCPassword=$testapi::password reboot_timeout=0 ";    # trigger default VNC installation
         }
 
         # we need ssh access to gather logs
@@ -190,7 +190,7 @@ sub run {
         send_key 'ret' if (check_screen('download-matching-boot-image', 420));
     }
 
-    if (is_ipmi && !get_var('AUTOYAST')) {
+    if (is_ipmi) {
         my $ssh_vnc_wait_time = 420;
         my $ssh_vnc_tag = eval { check_var('VIDEOMODE', 'text') ? 'sshd' : 'vnc' } . '-server-started';
         #Detect orthos-grub-boot-linux and qa-net-grub-boot-linux for aarch64 in orthos and openQA networks respectively
@@ -219,7 +219,7 @@ sub run {
             }
         }
         sync_time if is_sle('15+');
-        if (!is_upgrade && !get_var('KEEP_DISKS')) {
+        if (!is_upgrade && !get_var('KEEP_DISKS') || !get_var('AUTOYAST')) {
             prepare_disks;
         }
         save_screenshot;
