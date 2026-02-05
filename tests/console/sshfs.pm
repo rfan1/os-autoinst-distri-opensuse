@@ -14,10 +14,13 @@ use base "consoletest";
 use testapi;
 use serial_terminal 'select_serial_terminal';
 use utils;
+use registration qw(add_suseconnect_product get_addon_fullname);
+use version_utils 'is_sle';
 
 sub run {
     select_serial_terminal;
 
+    add_suseconnect_product(get_addon_fullname('phub')) if is_sle('<16');
     zypper_call('in sshfs');
     script_run('cd /var/tmp ; mkdir mnt ; sshfs localhost:/ mnt', 0);
     assert_script_run('zypper -n in xdelta3', fail_message => 'rpm/zypper calls statfs and might stumble over fuse fs');

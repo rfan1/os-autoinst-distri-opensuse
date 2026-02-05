@@ -1,0 +1,18 @@
+---
+name: mau-extratests3
+description: The 3rd set of CLI extratests
+schedule:
+  - installation/bootloader_start
+  - boot/boot_to_desktop
+  - console/prepare_test_data
+  - console/consoletest_setup
+  - console/shar
+  #  - console/soundtouch
+  - console/sshfs
+  #  - console/steamcmd
+  #  - console/systemd_nspawn
+  - console/tuned
+  - console/znc
+  - console/weechat
+  - console/xfce_gnome_deps
+  - console/zbar
