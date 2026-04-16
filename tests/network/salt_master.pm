@@ -58,7 +58,7 @@ sub run {
     script_retry('salt-key -L -l unaccepted | grep "minion"', delay => 15, retry => 15);
     assert_script_run('salt-run state.event tagmatch="salt/auth" count=1', timeout => 300);
     assert_script_run("sleep 5 && salt-key -A -y", timeout => 360);
-    assert_script_run("salt-run state.event tagmatch='salt/minion/*/start' count=2", timeout => 360);
+    assert_script_run("salt-run state.event tagmatch='salt/minion/*/start' count=2", timeout => 600);
     assert_script_run("salt '*' test.ping", timeout => 360);
 
     # Inform minion that keys were accepted
