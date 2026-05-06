@@ -51,6 +51,9 @@ sub run {
     my $python_bin = is_sle('<15') ? 'python' : 'python3';
     select_serial_terminal;
 
+    record_info 'upload kernel config file';
+    upload_logs('/boot/config-$(uname -r)', failok => 1);
+
     # regenerate initrd bsc#1204897
     assert_script_run 'dracut --force', 180;
 
