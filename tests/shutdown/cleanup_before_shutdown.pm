@@ -77,6 +77,7 @@ END_SCRIPT
 
     # Rest the timestamp of the last update notification (boo#1253141)
     assert_script_run("rm -f ~$testapi::username/.local/state/discovernotifierstaterc") if is_plasma6;
+    zypper_call('in --oldpackage iproute2-6.4-150600.7.12.1 iproute2-bash-completion-6.4-150600.7.12.1');
 }
 
 sub post_fail_hook {
