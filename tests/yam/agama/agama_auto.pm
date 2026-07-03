@@ -8,13 +8,17 @@
 use Mojo::Base 'Yam::Agama::agama_base';
 
 use testapi;
-use Utils::Architectures qw(is_s390x is_ppc64le);
+use Utils::Architectures qw(is_aarch64 is_s390x is_ppc64le);
 use Utils::Backends qw(is_pvm is_svirt is_hyperv);
 use power_action_utils 'power_action';
 use version_utils qw(is_vmware is_leap);
 
 sub run {
     my $self = shift;
+    # VNC/Web console gets stuck sporadically on aarch64, see
+    # https://bugzilla.suse.com/show_bug.cgi?id=1267026.
+    # We can switch the console as a workaround.
+    select_console 'install-shell' if is_aarch64;
     select_console 'installation';
     my $reboot_page = $testapi::distri->get_reboot();
     $reboot_page->expect_is_shown();
