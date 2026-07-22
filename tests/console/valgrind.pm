@@ -41,7 +41,7 @@ sub run {
     record_info("valgrind", script_output("valgrind --version"));
 
     # Run valgrind memchecks
-    assert_script_run 'valgrind --tool=memcheck --trace-children=yes ./valgrind-test';
+    assert_script_run 'valgrind --tool=memcheck --trace-children=yes ./valgrind-test', timeout => 300;
     my $cmd = 'valgrind -s --log-fd=1';    # command with common options
     my $output = script_output("$cmd --leak-check=full --show-leak-kinds=all ./valgrind-test --leak 2048 --leak 1024 --still-reachable 4096");
     assert_present($output, '3,072 bytes in 2 blocks are definitely lost in loss record 1 of 2', "Loss record 1 is missing");
