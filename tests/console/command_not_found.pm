@@ -43,6 +43,7 @@ sub run {
     if (is_sle('15+')) {
         # test for https://fate.suse.com/323424 if cnf works for non-registered modules
         $not_installed_pkg = 'wireshark';    # wireshark is in desktop module which is not registered here
+        $not_installed_pkg = 'crmsh' if is_sle(">=16.0");    # sle16 doesn't have desktop module, use package from HA repo
         assert_script_run "! rpm -q $not_installed_pkg";
         if (script_run(qq{echo "\$(cnf $not_installed_pkg 2>&1 | tee /dev/stderr)" | grep -q "zypper install $not_installed_pkg"}) != 0) {
             record_soft_failure "https://fate.suse.com/323424 - cnf doesn't cover non-registered modules";
