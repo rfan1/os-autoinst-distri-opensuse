@@ -26,8 +26,8 @@ sub run {
     x11_start_program('nautilus');
     send_key_until_needlematch 'nautilus-newfile-matched', 'right', 16;
     if (is_sle('15+') || is_leap('15.0+') || is_tumbleweed) {
+        record_info 'boo#1074057 qemu can not properly capture some keys in nautilus under GNOME wayland';
         assert_and_click('nautilus-newfile-matched', button => 'right');
-        record_soft_failure 'boo#1074057 qemu can not properly capture some keys in nautilus under GNOME wayland';
     }
     else {
         send_key "shift-f10";
