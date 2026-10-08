@@ -117,6 +117,7 @@ sub run {
     assert_script_run("iptables -I INPUT -p tcp --dport 22 -j ACCEPT");
     assert_script_run("mkdir /tmp/test; echo -n libssh_testcase001 > /tmp/test/libssh_testfile");
     assert_script_run("qemu-img create -f raw /tmp/test/libssh_block.raw 20m");    #file to be uploaded to container for qemu block test
+    assert_script_run("export DOCKER_BUILDKIT=1");
     assert_script_run('docker run -itd --name libssh_container --hostname container01 --add-host susetest:$(ip -4 addr show docker0 | grep -Po "inet \K[\d.]+") --privileged libssh_image');
 
     #Create key pair on host and container,  import sshd host key from container, copy pub key to each other
