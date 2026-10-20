@@ -47,8 +47,11 @@ sub run {
 
     # test 1
     # Installing and testing options -a -d -p
+    # Split -a (system-wide) and -p (process-specific)
     install_package('perf', trup_reboot => 1);
-    assert_script_run('perf stat -a -d -p 1 sleep 5');
+    assert_script_run('perf stat -a -d sleep 5');
+    assert_script_run('perf stat -p 1 sleep 5');
+
     # test 2
     # Counting with perf stat
     assert_script_run('perf stat dd if=/dev/zero of=demo bs=4k count=10000');
