@@ -77,11 +77,11 @@ sub run {
     assert_script_run 'chmod 700 /etc/rsyslog-certs';
     assert_script_run 'chmod 600 /etc/rsyslog-certs/*.pem';
     assert_script_run 'rsyslogd -N1';
-    if ($dtls) {
-        assert_script_run 'semanage port -a -t syslogd_port_t -p udp ' . DTLS_PORT
-          . ' || semanage port -m -t syslogd_port_t -p udp ' . DTLS_PORT;
-        record_info('selinux port', script_output('semanage port -l | grep -w ' . DTLS_PORT));
-    }
+    # if ($dtls) {
+    #     assert_script_run 'semanage port -a -t syslogd_port_t -p udp ' . DTLS_PORT
+    #       . ' || semanage port -m -t syslogd_port_t -p udp ' . DTLS_PORT;
+    #     record_info('selinux port', script_output('semanage port -l | grep -w ' . DTLS_PORT));
+    # }
     systemctl 'restart rsyslog';
     if (!script_run('systemctl is-active firewalld')) {
         assert_script_run 'firewall-cmd --add-port=6514/tcp' . ($dtls ? ' --add-port=' . DTLS_PORT . '/udp' : '');
