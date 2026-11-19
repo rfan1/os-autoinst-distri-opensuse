@@ -287,6 +287,21 @@ subtest 'bootloader_tests' => sub {
     set_var('FLAVOR', 'Default-Updates');
     ok get_default_bootloader eq 'grub2', "SLE Micro 5.5 is grub2";
 
+    set_var('DISTRI', 'sle');
+    set_var('VERSION', '15-SP7');
+    set_var('UEFI', '1');
+    ok get_default_bootloader eq 'grub2', "SLE 15-SP7 on UEFI is grub2";
+
+    set_var('VERSION', '16.1');
+    ok get_default_bootloader eq 'grub2', "SLE 16.1 on UEFI is grub2";
+
+    set_var('VERSION', '16.2');
+    set_var('UEFI', '0');
+    ok get_default_bootloader eq 'grub2', "SLE 16.2 non UEFI is grub2";
+
+    set_var('UEFI', '1');
+    ok get_default_bootloader eq 'systemd-boot', "SLE 16.2 on UEFI is systemd-boot";
+
     set_var('DISTRI', 'microos');
     set_var('VERSION', 'Tumbleweed');
     set_var('FLAVOR', 'MicroOS-Image-ContainerHost');

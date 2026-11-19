@@ -923,6 +923,7 @@ sub get_bootloader {
     return $bootloader if $bootloader;
 
     return 'wsl' if is_wsl;
+    return 'systemd-boot' if is_sle('>=16.2') && check_var('UEFI', 1);
     return 'grub2' if is_sle || is_leap || is_sle_micro;
     return 'grub2' if !check_var('UEFI', 1);
     return 'grub2' if (get_var('FLAVOR', '') =~ /(MicroOS-SelfInstall|MicroOS-Image|Image-ContainerHost|JeOS-for-kvm-and-xen|JeOS-for-OpenStack-Cloud)$/);
