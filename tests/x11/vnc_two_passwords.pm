@@ -95,6 +95,7 @@ sub setup_vnc_server {
 sub prepare_vnc {
     # maximize vnc window and press esc to close the gnome activity
     wait_still_screen 2;
+    assert_and_click 'tigervnc-auth' if check_screen 'tigervnc-auth';
     send_key 'super-up';
     wait_still_screen 2;
     send_key_until_needlematch 'tigervnc-desktop-loggedin', 'esc', 5, 5;
