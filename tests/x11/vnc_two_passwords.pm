@@ -6,10 +6,10 @@
 # Package: xorg-x11-Xvnc ncurses-utils tigervnc xev
 # Summary: Check VNC Secondary viewonly password
 # - Stop vncmanager
-# - Create custom passwords (one for readonly, other for # read/write)
+# - Create custom passwords (one for read/write, other for readonly)
 # - Starts a vncserver with the custom password file
 # - Starts a xterm
-# - For each password (read only/read write)
+# - For each password (read write/read only)
 #   - Starts xev to monitor events
 #   - Launch vncview with supplied password
 #   - Send some vnc events to xev
@@ -33,7 +33,9 @@ my $timeout = (is_aarch64 && is_sle) ? 120 : 30;
 my $display = ':37';
 
 # Passwords for VNC access
-my @options = ({pw => "ropasswd", change => 0}, {pw => "rwpasswd", change => 1});
+my $rw_password = "rwpasswd";
+my $ro_password = "ropasswd";
+my @options = ({pw => $rw_password, change => 1}, {pw => $ro_password, change => 0});
 # A wrong password to check if the access is denied
 my $wrong_password = "badpass";
 
@@ -61,8 +63,8 @@ sub setup_vnc_server {
         assert_script_run('umask 0077');
         assert_script_run('mkdir -Z $HOME/.vnc');
         assert_script_run('chmod go-rwx "$HOME/.vnc"');
-        script_output(qq(expect -c 'spawn vncpasswd /tmp/file.passwd; expect "Password:"; send $options[1]->{pw}\\r; expect "Verify:"; send $options[1]->{pw}\\r; expect "view-only"; send y\\r; expect "Password:"; send $options[0]->{pw}\\r; expect "Verify:"; send $options[0]->{pw}\\r ; interact'));
-        if (script_run("echo \"$options[1]->{pw}\" | vncpasswd -f > \$HOME/.vnc/passwd; echo \"$options[0]->{pw}\" | vncpasswd -f >> \$HOME/.vnc/passwd") != 0) {
+        script_output(qq(expect -c 'spawn vncpasswd /tmp/file.passwd; expect "Password:"; send $rw_password\\r; expect "Verify:"; send $rw_password\\r; expect "view-only"; send y\\r; expect "Password:"; send $ro_password\\r; expect "Verify:"; send $ro_password\\r ; interact'));
+        if (script_run("echo \"$rw_password\" | vncpasswd -f > \$HOME/.vnc/passwd; echo \"$ro_password\" | vncpasswd -f >> \$HOME/.vnc/passwd") != 0) {
             record_soft_failure('vncpasswd crashes - bsc#1171519');
             assert_script_run('cp /tmp/file.passwd $HOME/.vnc/passwd');
         }
@@ -76,9 +78,9 @@ sub setup_vnc_server {
         sleep 2;
     }
     else {
-        script_output(qq(expect -c 'spawn vncpasswd; expect "Password:"; send $options[1]->{pw}\\r; expect "Verify:"; send $options[1]->{pw}\\r; expect "view-only"; send y\\r; expect "Password:"; send $options[0]->{pw}\\r; expect "Verify:"; send $options[0]->{pw}\\r ; interact'));
-        script_output("echo \"$options[1]->{pw}\" | vncpasswd -f");    # bsc#1171519
-        script_output(qq(expect -c 'spawn vncpasswd -f /home/testuser/.config/tigervnc/passwd; expect "Password:"; send $options[1]->{pw}\\r; expect "Verify:"; send $options[1]->{pw}\\r; expect "view-only"; send y\\r; expect "Password:"; send $options[0]->{pw}\\r; expect "Verify:"; send $options[0]->{pw}\\r ; interact'));
+        script_output(qq(expect -c 'spawn vncpasswd; expect "Password:"; send $rw_password\\r; expect "Verify:"; send $rw_password\\r; expect "view-only"; send y\\r; expect "Password:"; send $ro_password\\r; expect "Verify:"; send $ro_password\\r ; interact'));
+        script_output("echo \"$rw_password\" | vncpasswd -f");    # bsc#1171519
+        script_output(qq(expect -c 'spawn vncpasswd -f /home/testuser/.config/tigervnc/passwd; expect "Password:"; send $rw_password\\r; expect "Verify:"; send $rw_password\\r; expect "view-only"; send y\\r; expect "Password:"; send $ro_password\\r; expect "Verify:"; send $ro_password\\r ; interact'));
         record_info("TigerVNC version", "TigerVNC version $tigervnc_vers is greater than of equal to 1.12.0");
         set_serial_prompt '# ';
         enter_cmd 'exit';
@@ -95,6 +97,7 @@ sub setup_vnc_server {
 sub prepare_vnc {
     # maximize vnc window and press esc to close the gnome activity
     wait_still_screen 2;
+    send_key 'esc' if check_screen 'tigervnc-auth', 5;
     send_key 'super-up';
     wait_still_screen 2;
     send_key_until_needlematch 'tigervnc-desktop-loggedin', 'esc', 5, 5;
@@ -125,6 +128,10 @@ sub generate_vnc_events {
     mouse_set(80, 120);
     mouse_set(85, 125);
     mouse_click;
+
+    # Dismiss any menu or popup triggered by the events before closing vncviewer
+    send_key 'esc';
+    wait_still_screen 2;
 
     send_key 'alt-f4';
     wait_serial('vncviewer-finished', $timeout) || die 'vncviewer not finished';
@@ -158,7 +165,7 @@ sub run {
 
     # add testuser and use testuser to setup vncserver
     assert_script_run("useradd -m -G tty,dialout,\$(stat -c %G /dev/$testapi::serialdev) testuser");
-    assert_script_run(qq(expect -c 'spawn passwd testuser; expect "New password:"; send $options[1]->{pw}\\r; expect "Retype new password:"; send $options[1]->{pw}\\r; interact'));
+    assert_script_run(qq(expect -c 'spawn passwd testuser; expect "New password:"; send $rw_password\\r; expect "Retype new password:"; send $rw_password\\r; interact'));
     setup_vnc_server;
 
     # open xterm for xev
@@ -169,7 +176,8 @@ sub run {
     assert_script_run("xauth add $display . $test_xauth");
 
     # Start vncviewer (rw & ro mode) and check if changes are processed by xev
-    foreach my $opt (@options) {
+    # Make sure RW is tested 1st always, followed by RO
+    foreach my $opt (sort { $b->{change} <=> $a->{change} } @options) {
         record_info 'Try ' . ($opt->{change} ? 'RW' : 'RO') . ' mode';
 
         # Start event watcher
@@ -238,11 +246,11 @@ sub run {
             x11_start_program('vncviewer');
             send_key("ret");
             assert_screen('tigervnc-desktop-loggedin', $timeout);
-            type_string("$options[1]->{pw}");
+            type_string("$rw_password");
             send_key("ret");
         }
         else {
-            type_string("$options[1]->{pw}");
+            type_string("$rw_password");
             send_key("ret");
             prepare_vnc;
         }
